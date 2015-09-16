@@ -10,5 +10,4 @@ lein run
 
 Copyright © 2015 Felix Jensen
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Distributed under the GNU GENERAL PUBLIC LICENSE Version 2.
