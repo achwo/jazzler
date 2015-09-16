@@ -1,7 +1,6 @@
 (ns jazzler.core-test
-  (:require [clojure.test :refer :all]
-            [jazzler.core :refer :all]))
+  (:use midje.sweet)
+  (:require [jazzler.core :refer :all]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(fact "This test fails."
+      (= 0 1) => true)
