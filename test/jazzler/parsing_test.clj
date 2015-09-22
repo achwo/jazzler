@@ -12,7 +12,6 @@ whitespace = #'\\s+'"))
 
 (defn parse-progression [string]
   (->> (progression-parser string)
-       (i/transform {:chordbar :bar})
        ))
 
 (facts "about parse-progression"
