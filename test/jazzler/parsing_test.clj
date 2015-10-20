@@ -57,7 +57,7 @@
 (defn parse-structure [string]
   (->> string
        ((i/parser (str structure-grammar general-grammar)))
-       (i/transform structure-transformations)))
+))
 
 (facts "about structure"
   (fact "it has at least one figure"
