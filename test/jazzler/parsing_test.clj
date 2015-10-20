@@ -23,5 +23,20 @@
                (parse-progression "[I IV]") 
                => [:progression (list [:bar (list "I")]
                                       [:bar (list "IV")])])
-  
+)
+
+(facts "about song-parser"
+  (fact "basic song structure"
+    (parse-song "Song: bla\n[I II III]")
+    => [:song [:title "bla"] 
+        [:progression (list [:bar (list "I")]
+                            [:bar (list "II")]
+                            [:bar (list "III")])]])
+
+  ;; TODO it would be nicer, if the test would work without progression
+  (fact "title can consist of several words"
+    (parse-song "Song: w1 w2\n[I]")
+    => [:song [:title "w1 w2"]
+        [:progression (list [:bar (list "I")])]])
+
 )

@@ -16,15 +16,32 @@
 (defn barchord [content]
   [:bar (list content)])
 
-(def progression-parser
-  (i/parser 
-   (str
-    "progression = <'['>barOrChord? (<ws> barOrChord)* <']'> "
-    "<barOrChord> = bar | bchord "
-    "bar = <'['> chord (<ws> chord)* <']'> "
-    "bchord = chord "
-    "chord = 'I' | 'II' | 'III' | 'IV' | 'V' |'VI' | 'VII' "
-    "ws = #'\\s+'")))
+(def general-grammar
+  (str
+   "nl = #'\\n+'"))
+
+(def progression-grammar 
+  (str
+   "progression = <'['>barOrChord? (<ws> barOrChord)* <']'> "
+   "<barOrChord> = bar | bchord "
+   "bar = <'['> chord (<ws> chord)* <']'> "
+   "bchord = chord "
+   "chord = 'I' | 'II' | 'III' | 'IV' | 'V' |'VI' | 'VII' "
+   "ws = #'\\s+'"))
+
+(def song-grammar
+  (str 
+   "song = title <nl> progression " 
+   "title = <'Song:'> <ws> name "
+   "<name> = #'[A-Za-z0-9 ]+'"
+   progression-grammar
+   general-grammar))
+
+(def song-parser
+  (i/parser song-grammar
+   ))
+
+(def progression-parser (i/parser progression-grammar))
 
 (def transformations
   {:progression progression
@@ -37,3 +54,8 @@
        (progression-parser)
        (i/transform transformations)))
 
+(defn parse-song [string]
+  (->> string
+       (song-parser)
+       (i/transform transformations)
+       ))
