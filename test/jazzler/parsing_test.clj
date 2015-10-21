@@ -25,12 +25,12 @@
                            [:bar (list [:chord "IV" :major])])])
 )
 
-(defn start_at [flag string]
+(defn start-at [flag string]
   (->> string
        (#(song-parser % :start flag))
-       (i/transform progression-transformations)))
+       (i/transform transformations)))
 
-(def parse-title (partial start_at :title))
+(def parse-title (partial start-at :title))
 
 (facts "about title"
   (fact "it must not be empty"
@@ -51,14 +51,16 @@
 
 (facts "about parse-song"
   (fact "basic song structure"
-    (parse-song "Song: bla\n[I II III]")
+    (parse-song "Song: bla\n[I+ ii III ivo]")
     => [:song [:title "bla"] 
-        [:progression (list [:bar (list [:chord "I" :major])]
-                            [:bar (list [:chord "II" :major])]
-                            [:bar (list [:chord "III" :major])])]]))
+        [:progression (list [:bar (list [:chord "I" :augmented])]
+                            [:bar (list [:chord "ii" :minor])]
+                            [:bar (list [:chord "III" :major])]
+                            [:bar (list [:chord "iv" :diminished])]
+)]]))
 
 
-(def parse-structure (partial start_at :structure))
+(def parse-structure (partial start-at :structure))
 
 (facts "about structure"
   (fact "it has at least one figure"
@@ -86,8 +88,7 @@
     => [:structure [:figSym "Intro"] [:figSym "Verse"] [:figSym "Outro"]])
 )
 
-(def parse-minor (partial start_at :minorchord))
-(def parse-major (partial start_at :majorchord))
+(def parse-major (partial start-at :majorchord))
 
 (facts "about major chords"
   (fact "major triads are written as uppercase roman numerals"
@@ -101,7 +102,28 @@
                         (parse-major "")
                         (parse-major "IIV")]) => true))
 
+(def parse-minor (partial start-at :minorchord))
+
 (facts "about minor chords"
   (fact "minor triads are written as lowercase roman numerals"
     (parse-minor "ii") => [:chord "ii" :minor]
     (parse-minor "vii") => [:chord "vii" :minor]))
+
+(def parse-dim (partial start-at :diminished))
+
+(facts "about diminished chords"
+  (fact "they are written as lowercase roman numerals followed by o"
+    (parse-dim "io") => [:chord "i" :diminished]
+    (parse-dim "ivo") => [:chord "iv" :diminished]
+    (parse-dim "iiio") => [:chord "iii" :diminished])
+  (fact "they don't accept uppercase roman numerals"
+    (i/failure? (parse-dim "Io")) => true)
+)
+
+(def parse-aug (partial start-at :augmented))
+
+(facts "about augmented chords"
+  (fact "they are written as uppercase roman numerals followed by +"
+    (parse-aug "I+") => [:chord "I" :augmented]
+    
+))

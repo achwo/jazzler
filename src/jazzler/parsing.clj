@@ -16,13 +16,17 @@
 (defn barchord [content]
   [:bar (list content)])
 
-(defn chord [[_ name]] name )
+(defn majorchord [root]
+  [:chord root :major])
 
-(defn majorchord [name]
-  [:chord name :major])
+(defn minorchord [root]
+  [:chord root :minor])
 
-(defn minorchord [name]
-  [:chord name :minor])
+(defn diminished [[_ root]]
+  [:chord root :diminished])
+
+(defn augmented [[_ root]]
+  [:chord root :augmented])
 
 (def song-grammar
   (str 
@@ -33,15 +37,17 @@
    "<barOrChord> = bar | bchord "
    "bar = <'['> chord (<wsfull> chord)* <']'> "
    "bchord = chord "
-   "<chord> = (majorchord | minorchord) "
+   "<chord> = majorchord | minorchord | diminished | augmented "
    "majorchord = 'I' | 'II' | 'III' | 'IV' | 'V' |'VI' | 'VII' "
    "minorchord = 'i' | 'ii' | 'iii' | 'iv' | 'v' | 'vi' | 'vii' "
+   "diminished = minorchord <'o'> "
+   "augmented = majorchord <'+'> "
    "structure = <'Structure'> <eol> structureContent "
    "<structureContent> = <ws> figSym (<wsfull> figSym)* "
    "figSym = #'[A-Z][a-z]*' "
    "eol = ws nl "
    "ws = #'[ \t]*' "
-   "nl = #'\\n+'"
+   "nl = #'\\n+' "
    "wsfull = #'\\s+'"
 ))
 ;; Difference between ws and wsfull:
@@ -50,24 +56,24 @@
 ;; Most importantly: wsfull also contains newline characters
 ;; for more info, see: http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
 
-(def song-parser
-  (i/parser song-grammar))
+(def song-parser (i/parser song-grammar))
 
-(def progression-transformations
+(def transformations
   {:progression progression
    :bchord barchord
-;   :chord chord
    :majorchord majorchord
    :minorchord minorchord
+   :diminished diminished
+   :augmented augmented
    :bar bar})
 
 (defn parse-progression [string]
   (let [prog-parser #(song-parser % :start :progression)]
     (->> string
          (prog-parser)
-         (i/transform progression-transformations))))
+         (i/transform transformations))))
 
 (defn parse-song [string]
   (->> string
        (song-parser)
-       (i/transform progression-transformations)))
+       (i/transform transformations)))
