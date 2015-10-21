@@ -37,4 +37,4 @@ For more information on Roman Numeral Analysis, see [Wikipedia: Roman Numeral An
 
 Copyright © 2015 Felix Jensen
 
-Distributed under the GNU GENERAL PUBLIC LICENSE Version 2.
+Distributed under the GNU GENERAL PUBLIC LICENSE Version 3.
