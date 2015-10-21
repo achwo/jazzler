@@ -25,8 +25,9 @@
 )
 
 (defn parse-title [string]
-  (->> string
-       ((i/parser (str title-grammar general-grammar)))))
+  (let [title-parser #(song-parser % :start :title)]
+    (->> string
+         (title-parser))))
 
 (facts "about title"
   (fact "it must not be empty"
@@ -55,9 +56,10 @@
 )
 
 (defn parse-structure [string]
-  (->> string
-       ((i/parser (str structure-grammar general-grammar)))
-))
+  (let [structure-parser #(song-parser % :start :structure)]
+    (->> string
+         (structure-parser)
+         )))
 
 (facts "about structure"
   (fact "it has at least one figure"
