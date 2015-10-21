@@ -16,6 +16,13 @@
 (defn barchord [content]
   [:bar (list content)])
 
+(defn chord [[_ name]] name )
+
+(defn majorchord [name]
+  [:chord name :major])
+
+(defn minorchord [name]
+  [:chord name :minor])
 
 (def song-grammar
   (str 
@@ -26,7 +33,9 @@
    "<barOrChord> = bar | bchord "
    "bar = <'['> chord (<wsfull> chord)* <']'> "
    "bchord = chord "
-   "chord = 'I' | 'II' | 'III' | 'IV' | 'V' |'VI' | 'VII' "
+   "<chord> = (majorchord | minorchord) "
+   "majorchord = 'I' | 'II' | 'III' | 'IV' | 'V' |'VI' | 'VII' "
+   "minorchord = 'i' | 'ii' | 'iii' | 'iv' | 'v' | 'vi' | 'vii' "
    "structure = <'Structure'> <eol> structureContent "
    "<structureContent> = <ws> figSym (<wsfull> figSym)* "
    "figSym = #'[A-Z][a-z]*' "
@@ -47,7 +56,9 @@
 (def progression-transformations
   {:progression progression
    :bchord barchord
-   :chord str
+;   :chord chord
+   :majorchord majorchord
+   :minorchord minorchord
    :bar bar})
 
 (defn parse-progression [string]
@@ -59,5 +70,4 @@
 (defn parse-song [string]
   (->> string
        (song-parser)
-       (i/transform progression-transformations)
-       ))
+       (i/transform progression-transformations)))

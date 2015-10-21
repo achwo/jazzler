@@ -8,26 +8,29 @@
     (parse-progression "[]") => [:progression '()])
   (fact "it can have bars with one chord"
     (parse-progression "[[I]]") 
-    => [:progression (list [:bar (list "I")])])
+    => [:progression (list [:bar (list [:chord "I" :major])])])
   (fact "it can have aliases of chordname for a whole bar"
     (parse-progression "[I]") 
-    => [:progression (list [:bar (list "I")])])
+    => [:progression (list [:bar (list [:chord "I" :major])])])
   (fact "a bar can contain more than one chord"
     (parse-progression "[[I IV]]") 
-    => [:progression (list [:bar (list "I" "IV")])])
+    => [:progression (list [:bar (list [:chord "I" :major] 
+                                       [:chord "IV" :major])])])
   (fact "it can contain more than one bar"
     (parse-progression "[[I] [IV]]") 
-    => [:progression (list [:bar (list "I")]
-                           [:bar (list "IV")])]
+    => [:progression (list [:bar (list [:chord "I" :major])]
+                           [:bar (list [:chord "IV" :major])])]
     (parse-progression "[I IV]") 
-    => [:progression (list [:bar (list "I")]
-                           [:bar (list "IV")])])
+    => [:progression (list [:bar (list [:chord "I" :major])]
+                           [:bar (list [:chord "IV" :major])])])
 )
 
-(defn parse-title [string]
-  (let [title-parser #(song-parser % :start :title)]
-    (->> string
-         (title-parser))))
+(defn start_at [flag string]
+  (->> string
+       (#(song-parser % :start flag))
+       (i/transform progression-transformations)))
+
+(def parse-title (partial start_at :title))
 
 (facts "about title"
   (fact "it must not be empty"
@@ -46,20 +49,16 @@
     => [:title "Bizarre Love Triangle"])
 )
 
-(facts "about song-parser"
+(facts "about parse-song"
   (fact "basic song structure"
     (parse-song "Song: bla\n[I II III]")
     => [:song [:title "bla"] 
-        [:progression (list [:bar (list "I")]
-                            [:bar (list "II")]
-                            [:bar (list "III")])]])
-)
+        [:progression (list [:bar (list [:chord "I" :major])]
+                            [:bar (list [:chord "II" :major])]
+                            [:bar (list [:chord "III" :major])])]]))
 
-(defn parse-structure [string]
-  (let [structure-parser #(song-parser % :start :structure)]
-    (->> string
-         (structure-parser)
-         )))
+
+(def parse-structure (partial start_at :structure))
 
 (facts "about structure"
   (fact "it has at least one figure"
@@ -86,3 +85,23 @@
     (parse-structure "Structure\n\n Intro   Verse\n\tOutro")
     => [:structure [:figSym "Intro"] [:figSym "Verse"] [:figSym "Outro"]])
 )
+
+(def parse-minor (partial start_at :minorchord))
+(def parse-major (partial start_at :majorchord))
+
+(facts "about major chords"
+  (fact "major triads are written as uppercase roman numerals"
+    (parse-major "I") => [:chord "I" :major]
+    (parse-major "IV") => [:chord "IV" :major]
+    (parse-major "VII") => [:chord "VII" :major])
+  (fact "edge cases"
+    (every? i/failure? [(parse-major "VIII")
+                        (parse-major "IIII")
+                        (parse-major "VV")
+                        (parse-major "")
+                        (parse-major "IIV")]) => true))
+
+(facts "about minor chords"
+  (fact "minor triads are written as lowercase roman numerals"
+    (parse-minor "ii") => [:chord "ii" :minor]
+    (parse-minor "vii") => [:chord "vii" :minor]))
