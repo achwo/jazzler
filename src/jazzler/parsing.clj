@@ -17,16 +17,16 @@
   [:bar (list content)])
 
 (defn majorchord [root]
-  [:chord root :major])
+  {:chord root :triad :major})
 
 (defn minorchord [root]
-  [:chord root :minor])
+  {:chord root :triad :minor})
 
-(defn diminished [[_ root]]
-  [:chord root :diminished])
+(defn diminished [{root :chord}]
+  {:chord root :triad :diminished})
 
-(defn augmented [[_ root]]
-  [:chord root :augmented])
+(defn augmented [{root :chord}]
+  {:chord root :triad :augmented})
 
 (def song-grammar
   (str 

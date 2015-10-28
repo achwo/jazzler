@@ -8,21 +8,21 @@
     (parse-progression "[]") => [:progression '()])
   (fact "it can have bars with one chord"
     (parse-progression "[[I]]") 
-    => [:progression (list [:bar (list [:chord "I" :major])])])
+    => [:progression (list [:bar (list {:chord "I" :triad :major})])])
   (fact "it can have aliases of chordname for a whole bar"
     (parse-progression "[I]") 
-    => [:progression (list [:bar (list [:chord "I" :major])])])
+    => [:progression (list [:bar (list {:chord "I" :triad :major})])])
   (fact "a bar can contain more than one chord"
     (parse-progression "[[I IV]]") 
-    => [:progression (list [:bar (list [:chord "I" :major] 
-                                       [:chord "IV" :major])])])
+    => [:progression (list [:bar (list {:chord "I" :triad :major} 
+                                       {:chord "IV" :triad :major})])])
   (fact "it can contain more than one bar"
     (parse-progression "[[I] [IV]]") 
-    => [:progression (list [:bar (list [:chord "I" :major])]
-                           [:bar (list [:chord "IV" :major])])]
+    => [:progression (list [:bar (list {:chord "I" :triad :major})]
+                           [:bar (list {:chord "IV" :triad :major})])]
     (parse-progression "[I IV]") 
-    => [:progression (list [:bar (list [:chord "I" :major])]
-                           [:bar (list [:chord "IV" :major])])])
+    => [:progression (list [:bar (list {:chord "I" :triad :major})]
+                           [:bar (list {:chord "IV" :triad :major})])])
 )
 
 (defn start-at [flag string]
@@ -53,10 +53,10 @@
   (fact "basic song structure"
     (parse-song "Song: bla\n[I+ ii III ivo]")
     => [:song [:title "bla"] 
-        [:progression (list [:bar (list [:chord "I" :augmented])]
-                            [:bar (list [:chord "ii" :minor])]
-                            [:bar (list [:chord "III" :major])]
-                            [:bar (list [:chord "iv" :diminished])]
+        [:progression (list [:bar (list {:chord "I" :triad :augmented})]
+                            [:bar (list {:chord "ii" :triad :minor})]
+                            [:bar (list {:chord "III" :triad :major})]
+                            [:bar (list {:chord "iv" :triad :diminished})]
 )]]))
 
 
@@ -92,9 +92,9 @@
 
 (facts "about major chords"
   (fact "major triads are written as uppercase roman numerals"
-    (parse-major "I") => [:chord "I" :major]
-    (parse-major "IV") => [:chord "IV" :major]
-    (parse-major "VII") => [:chord "VII" :major])
+    (parse-major "I") => {:chord "I" :triad :major}
+    (parse-major "IV") => {:chord "IV" :triad :major}
+    (parse-major "VII") => {:chord "VII" :triad :major})
   (fact "edge cases"
     (every? i/failure? [(parse-major "VIII")
                         (parse-major "IIII")
@@ -106,16 +106,16 @@
 
 (facts "about minor chords"
   (fact "minor triads are written as lowercase roman numerals"
-    (parse-minor "ii") => [:chord "ii" :minor]
-    (parse-minor "vii") => [:chord "vii" :minor]))
+    (parse-minor "ii") => {:chord "ii" :triad :minor}
+    (parse-minor "vii") => {:chord "vii" :triad :minor}))
 
 (def parse-dim (partial start-at :diminished))
 
 (facts "about diminished chords"
   (fact "they are written as lowercase roman numerals followed by o"
-    (parse-dim "io") => [:chord "i" :diminished]
-    (parse-dim "ivo") => [:chord "iv" :diminished]
-    (parse-dim "iiio") => [:chord "iii" :diminished])
+    (parse-dim "io") => {:chord "i" :triad :diminished}
+    (parse-dim "ivo") => {:chord "iv" :triad :diminished}
+    (parse-dim "iiio") => {:chord "iii" :triad :diminished})
   (fact "they don't accept uppercase roman numerals"
     (i/failure? (parse-dim "Io")) => true)
 )
@@ -124,6 +124,6 @@
 
 (facts "about augmented chords"
   (fact "they are written as uppercase roman numerals followed by +"
-    (parse-aug "I+") => [:chord "I" :augmented]
+    (parse-aug "I+") => {:chord "I" :triad :augmented}
     
 ))
