@@ -10,23 +10,20 @@
     :else [:progression (list content)];unused
 ))
 
-(defn bar [& content]
-  [:bar content])
+(defn add-bar-numbers [bars]
+  (map #(assoc %1 :bar %2) bars (iterate inc 1)))
 
-(defn barchord [content]
-  [:bar (list content)])
+(defn bar [& content] {:figures content})
 
-(defn majorchord [root]
-  {:chord root :triad :major})
+(defn barchord [content] {:figures (list content)})
 
-(defn minorchord [root]
-  {:chord root :triad :minor})
+(defn majorchord [root] {:chord root :triad :major})
 
-(defn diminished [{root :chord}]
-  {:chord root :triad :diminished})
+(defn minorchord [root] {:chord root :triad :minor})
 
-(defn augmented [{root :chord}]
-  {:chord root :triad :augmented})
+(defn diminished [{root :chord}] {:chord root :triad :diminished})
+
+(defn augmented [{root :chord}] {:chord root :triad :augmented})
 
 (def song-grammar
   (str 

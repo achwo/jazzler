@@ -8,22 +8,21 @@
     (parse-progression "[]") => [:progression '()])
   (fact "it can have bars with one chord"
     (parse-progression "[[I]]") 
-    => [:progression (list [:bar (list {:chord "I" :triad :major})])])
+    => [:progression (list {:figures (list {:chord "I" :triad :major})})])
   (fact "it can have aliases of chordname for a whole bar"
     (parse-progression "[I]") 
-    => [:progression (list [:bar (list {:chord "I" :triad :major})])])
+    => [:progression (list {:figures (list {:chord "I" :triad :major})})])
   (fact "a bar can contain more than one chord"
     (parse-progression "[[I IV]]") 
-    => [:progression (list [:bar (list {:chord "I" :triad :major} 
-                                       {:chord "IV" :triad :major})])])
-  (fact "it can contain more than one bar"
-    (parse-progression "[[I] [IV]]") 
-    => [:progression (list [:bar (list {:chord "I" :triad :major})]
-                           [:bar (list {:chord "IV" :triad :major})])]
-    (parse-progression "[I IV]") 
-    => [:progression (list [:bar (list {:chord "I" :triad :major})]
-                           [:bar (list {:chord "IV" :triad :major})])])
-)
+    => [:progression (list {:figures (list {:chord "I" :triad :major} 
+                                         {:chord "IV" :triad :major})})]
+    (fact "it can contain more than one bar"
+      (parse-progression "[[I] [IV]]") 
+      => [:progression (list {:figures (list {:chord "I" :triad :major})}
+                             {:figures (list {:chord "IV" :triad :major})})]
+      (parse-progression "[I IV]") 
+      => [:progression (list {:figures (list {:chord "I" :triad :major})}
+                             {:figures (list {:chord "IV" :triad :major})})])))
 
 (defn start-at [flag string]
   (->> string
@@ -46,18 +45,16 @@
 
   (fact "it can consist of several words"
     (parse-title "Song: Bizarre Love Triangle") 
-    => [:title "Bizarre Love Triangle"])
-)
+    => [:title "Bizarre Love Triangle"]))
 
 (facts "about parse-song"
   (fact "basic song structure"
     (parse-song "Song: bla\n[I+ ii III ivo]")
     => [:song [:title "bla"] 
-        [:progression (list [:bar (list {:chord "I" :triad :augmented})]
-                            [:bar (list {:chord "ii" :triad :minor})]
-                            [:bar (list {:chord "III" :triad :major})]
-                            [:bar (list {:chord "iv" :triad :diminished})]
-)]]))
+        [:progression (list {:figures (list {:chord "I" :triad :augmented})}
+                            {:figures (list {:chord "ii" :triad :minor})}
+                            {:figures (list {:chord "III" :triad :major})}
+                            {:figures (list {:chord "iv" :triad :diminished})})]]))
 
 
 (def parse-structure (partial start-at :structure))
@@ -85,8 +82,7 @@
     (parse-structure "Structure \nIntro")
     => [:structure [:figSym "Intro"]]
     (parse-structure "Structure\n\n Intro   Verse\n\tOutro")
-    => [:structure [:figSym "Intro"] [:figSym "Verse"] [:figSym "Outro"]])
-)
+    => [:structure [:figSym "Intro"] [:figSym "Verse"] [:figSym "Outro"]]))
 
 (def parse-major (partial start-at :majorchord))
 
@@ -117,13 +113,18 @@
     (parse-dim "ivo") => {:chord "iv" :triad :diminished}
     (parse-dim "iiio") => {:chord "iii" :triad :diminished})
   (fact "they don't accept uppercase roman numerals"
-    (i/failure? (parse-dim "Io")) => true)
-)
+    (i/failure? (parse-dim "Io")) => true))
 
 (def parse-aug (partial start-at :augmented))
 
 (facts "about augmented chords"
   (fact "they are written as uppercase roman numerals followed by +"
-    (parse-aug "I+") => {:chord "I" :triad :augmented}
-    
-))
+    (parse-aug "I+") => {:chord "I" :triad :augmented}))
+
+(facts "about add-bar-numbers" 
+  (fact "the first bar is bar 1"
+    (add-bar-numbers [{}]) => [{:bar 1}])
+  (fact "the second bar is bar 2"
+    (add-bar-numbers [{} {}]) => [{:bar 1} {:bar 2}])
+  (fact "works for more bars"
+    (add-bar-numbers [{} {} {}]) => [{:bar 1} {:bar 2} {:bar 3}]))
