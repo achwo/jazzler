@@ -1,14 +1,24 @@
 (ns jazzler.parsing
   (:gen-class)
-  (:require [instaparse.core :as i]))
+  (:require [clojure.string :as s]
+            [instaparse.core :as i]))
+
+(defn string->degree 
+  "Converts a string degree into a keyword degree as used in overtone
+  Example: \"I\" => :i"
+  [s] 
+  {:pre [(string? s)]}
+  (keyword (s/lower-case s)))
 
 (defn progression 
   [& content]
   (cond
     (seq? content) [:progression content]
     (nil? content) [:progression '()]
-    :else [:progression (list content)];unused
+    ;; :else [:progression (list content)];unused
 ))
+
+(defn title [title] {:title title})
 
 (defn add-bar-numbers [bars]
   (map #(assoc %1 :bar %2) bars (iterate inc 1)))
@@ -17,13 +27,15 @@
 
 (defn barchord [content] {:figures (list content)})
 
-(defn majorchord [root] {:chord root :triad :major})
+(defn majorchord [root] {:chord (string->degree root) 
+                         :triad :major})
 
-(defn minorchord [root] {:chord root :triad :minor})
+(defn minorchord [root] {:chord (string->degree root) 
+                         :triad :minor})
 
-(defn diminished [{root :chord}] {:chord root :triad :diminished})
+(defn diminished [{root :chord}] {:chord root, :triad :diminished})
 
-(defn augmented [{root :chord}] {:chord root :triad :augmented})
+(defn augmented [{root :chord}] {:chord root, :triad :augmented})
 
 (def song-grammar
   (str 
@@ -62,6 +74,7 @@
    :minorchord minorchord
    :diminished diminished
    :augmented augmented
+   :title title
    :bar bar})
 
 (defn parse-progression [string]
