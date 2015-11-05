@@ -23,9 +23,9 @@
 (defn add-bar-numbers [bars]
   (map #(assoc %1 :bar %2) bars (iterate inc 1)))
 
-(defn bar [& content] {:figures content})
+(defn bar [& content] {:elements content})
 
-(defn barchord [content] {:figures (list content)})
+(defn barchord [content] {:elements (list content)})
 
 (defn majorchord [root] {:chord (string->degree root) 
                          :triad :major})

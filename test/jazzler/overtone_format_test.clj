@@ -5,6 +5,17 @@
 
 (def bpm120 (partial set-bpm 120))
 
+(defn chord 
+  "Quick construction for chords. Customize by adding keys as params.
+  Defaults: :chord :i, :triad :major, :beat 1, :duration 1
+  Usage: (chord :chord :i :beat 1) => chord"
+  [& {:keys [chord triad beat duration]
+      :or {chord :i triad :major beat 1 duration 1}}]
+  {:chord chord :triad triad :beat beat :duration duration})
+
+(defn mode [& {:keys [root triad] :or {root :C3 triad :major}}]
+  {:root root :triad triad})
+
 (facts "about set-bpm"
   (fact "it adds a given bpm to a new bpm field to a chord"
     (set-bpm ..bpm.. {:chord ..chord.. :triad ..triad..}) 
@@ -14,16 +25,17 @@
     (bpm120 {:bpm 100}) => {:bpm 120}))
 
 (facts "about set-offset"
-  (fact "It adds a new :offset field"
+  (fact "it adds a new :offset field"
     (set-offset 1/2 {}) => {:offset 1/2}))
 
 (facts "about degree->midi-chord"
-  (fact "it returns the chord for the given degree in the given key as list of midi notes"
-    (degree->midi-chord :i [:C3 :major]) => '(48 55 52)
-    (degree->midi-chord :vii [:C3 :major]) => '(59 66 63)
-    (degree->midi-chord :i [:G3 :major]) => '(55 62 59))
+  (fact "it returns the chord as list of midi notes"
+    (degree->midi-chord :i (mode)) => '(48 55 52)
+    (degree->midi-chord :vii (mode)) => '(59 66 63)
+    (degree->midi-chord :i (mode :root :G3)) => '(55 62 59))
   (fact "it only works with keywords"
-    (degree->midi-chord "I" [:C3 :major]) => (throws AssertionError)))
+    (degree->midi-chord "I" (mode)) 
+    => (throws AssertionError)))
 
 (facts "about string->root"
   (fact "it converts the root string into a keyword in octave 3"
@@ -35,63 +47,67 @@
 
 (facts "about convert-progression"
   (fact "it changes the key format"
-    (convert-progression {:key ["C" :major]}) => {:key [:C3 :major]})
+    (convert-progression {:key ["C" :major]})
+    => {:key (mode)})
   (fact "it requires a complete progression map"
     (convert-progression {}) => (throws AssertionError)))
 
-(defn add-chord-notes [chord]
-  (assoc chord :notes (degree->midi-chord (:chord chord) (:key chord))))
-
 (facts "about add-chord-notes"
   (fact "it adds a note field to chords"
-    (add-chord-notes {:chord :i :key [:C3 :major]}) 
-    => {:chord :i :key [:C3 :major] :notes [48 55 52]}))
-
-(defn bar-playback-information [bar]
-  (map add-chord-notes bar))
+    (add-chord-notes (mode) (chord)) 
+    => (assoc (chord) :notes [48 55 52])))
 
 (facts "about bar-playback-information"
   (fact "it adds note information to any amount of chords"
-    (bar-playback-information [..in1.. ..in2..]) => [..out1.. ..out2..]
-    (provided (add-chord-notes ..in1..) => ..out1..)
-    (provided (add-chord-notes ..in2..) => ..out2..)))
-
-(defn add-playback-information [prog]
-  (map bar-playback-information prog))
-
-(facts "about add-playback-information"
-  (fact "it works for more than one bar"
-      (add-playback-information [..in1.. ..in2..]) => [..out1.. ..out2..]
-      (provided 
-       (bar-playback-information ..in1..) => ..out1..
-       (bar-playback-information ..in2..) => ..out2..)))
-
+    (bar-playback-information ..key.. {:elements [..in1.. ..in2..]})
+    => {:elements [..out1.. ..out2..]}
+    (provided (add-chord-notes ..key.. ..in1..) => ..out1..)
+    (provided (add-chord-notes ..key.. ..in2..) => ..out2..)))
 
 (def input-prog 
-  {:progression 
-   [{:bar 1, :figures [{:chord :i, :triad :major
-                        :beat 1, :duration 1/2}
-                       {:chord :ii :triad :minor
-                        :beat 3, :duration 1/2}]}
-    {:bar 2, :figures [{:chord :iii, :triad :minor
-                        :beat 1, :duration 1}]}]})
+  [{:bar 1 
+    :elements [(chord :duration 1/2)
+               (chord :chord :ii :triad :minor :beat 3 :duration 1/2)]}
+   {:bar 2 :elements [(chord :chord :iii :triad :minor)]}])
 
 (def input-song 
   {:title "Wurstbrot I"
    :author "Edgar der Vierte"
    :bpm 120
-   :key {:root :C3, :triad :major}
-   :figures {"Intro" {:progression input-prog}}
+   :key (mode)
+   :figures {"Intro" input-prog}
    :structure ["Intro"]})
 
-(def output-bar1 {:bar 1 :figures [{:notes [1 2 3] :beat 1 :duration 1/2
-                      :chord :i :triad :major}
-                     {:notes [4 5 6] :beat 3 :duration 1/2
-                      :chord :ii :triad :minor}]})
 
-(def output-bar2 {:bar 2 :figures [{:notes [7 8 9] :beat 1 :duration 1
-                      :chord :iii :triad :minor}]})
+(def output-prog 
+  [{:bar 1 
+    :elements [(assoc (chord :duration 1/2) :notes [48 55 52])
+               (assoc (chord :chord :ii :triad :minor
+                             :beat 3 :duration 1/2) :notes [50 57 54])]}
+   {:bar 2 :elements [(assoc (chord :chord :iii :triad :minor) 
+                             :notes [52 59 56])]}])
 
-(def output-prog [output-bar1 output-bar2])
+(def output-song (assoc input-song :figures {"Intro" output-prog}))
 
-(def output-song {:bpm 120 :progression output-prog})
+(def better-output-song {:bpm 120 
+                  :progression output-prog})
+
+(fact "add-pb-inf for multiple figures in song"
+  (add-playback-information {:key (mode)
+                             :figures {"Intro" input-prog
+                                       "Outro" input-prog}})
+  => {:key (mode)
+      :figures {"Intro" output-prog
+                "Outro" output-prog}})
+
+(fact "integration test"
+  (add-playback-information input-song) => output-song)
+
+;; TODO process the structure, map the figure progressions and add 
+;;      :progression field to song
+;; TODO in player.clj, make function to playback the resulting song
+;; TODO figures in chord-scope and in song-scope: maybe another name?
+;; TODO key (music lingo) and key (map) are ambiguous... solution?
+;; TODO remove overtone autoloading on autotest!
+;; TODO key => mode? need to research
+;; TODO chord: change :chord to :degree

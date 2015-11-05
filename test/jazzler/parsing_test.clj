@@ -12,20 +12,20 @@
     (parse-progression "[]") => [:progression '()])
   (fact "it can have bars with one chord"
     (parse-progression "[[I]]") 
-    => [:progression [{:figures [chord-I]}]])
+    => [:progression [{:elements [chord-I]}]])
   (fact "it can have aliases of chordname for a whole bar"
     (parse-progression "[I]") 
-    => [:progression [{:figures [chord-I]}]])
+    => [:progression [{:elements [chord-I]}]])
   (fact "a bar can contain more than one chord"
     (parse-progression "[[I IV]]") 
-    => [:progression [{:figures [chord-I chord-IV]}]])
+    => [:progression [{:elements [chord-I chord-IV]}]])
   (fact "it can contain more than one bar"
     (parse-progression "[[I] [IV]]") 
-    => [:progression [{:figures [chord-I]}
-                      {:figures [chord-IV]}]]
+    => [:progression [{:elements [chord-I]}
+                      {:elements [chord-IV]}]]
     (parse-progression "[I IV]") 
-    => [:progression [{:figures [chord-I]}
-                      {:figures [chord-IV]}]]))
+    => [:progression [{:elements [chord-I]}
+                      {:elements [chord-IV]}]]))
 
 (defn start-at [start s]
   (->> s
