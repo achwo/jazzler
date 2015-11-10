@@ -1,20 +1,10 @@
 (ns jazzler.overtone-format-test
   (:use midje.sweet)
   (:require [jazzler.overtone-format :refer :all]
+            [jazzler.helper :refer [chord mode] :as h]
             [overtone.music.pitch :as o]))
 
 (def bpm120 (partial set-bpm 120))
-
-(defn chord 
-  "Quick construction for chords. Customize by adding keys as params.
-  Defaults: :chord :i, :triad :major, :beat 1, :duration 1
-  Usage: (chord :chord :i :beat 1) => chord"
-  [& {:keys [chord triad beat duration]
-      :or {chord :i triad :major beat 1 duration 1}}]
-  {:chord chord :triad triad :beat beat :duration duration})
-
-(defn mode [& {:keys [root triad] :or {root :C3 triad :major}}]
-  {:root root :triad triad})
 
 (facts "about set-bpm"
   (fact "it adds a given bpm to a new bpm field to a chord"
@@ -47,28 +37,33 @@
 
 (facts "about convert-progression"
   (fact "it changes the key format"
-    (convert-progression {:key ["C" :major]})
+    (convert-key {:key ["C" :major]})
     => {:key (mode)})
   (fact "it requires a complete progression map"
-    (convert-progression {}) => (throws AssertionError)))
+    (convert-key {}) => (throws AssertionError)))
 
-(facts "about add-chord-notes"
+(facts "about add-notes"
   (fact "it adds a note field to chords"
-    (add-chord-notes (mode) (chord)) 
-    => (assoc (chord) :notes [48 55 52])))
-
-(facts "about bar-playback-information"
-  (fact "it adds note information to any amount of chords"
-    (bar-playback-information ..key.. {:elements [..in1.. ..in2..]})
-    => {:elements [..out1.. ..out2..]}
-    (provided (add-chord-notes ..key.. ..in1..) => ..out1..)
-    (provided (add-chord-notes ..key.. ..in2..) => ..out2..)))
+    (add-notes (mode) (chord)) 
+    => (chord :notes [48 55 52])))
 
 (def input-prog 
   [{:bar 1 
     :elements [(chord :duration 1/2)
                (chord :chord :ii :triad :minor :beat 3 :duration 1/2)]}
    {:bar 2 :elements [(chord :chord :iii :triad :minor)]}])
+
+(def output-prog 
+  [{:bar 1 :elements [(chord :duration 1/2  :notes [48 55 52])
+                      (chord :chord :ii :triad :minor :beat 3 
+                             :duration 1/2 :notes [50 57 54])]}
+   {:bar 2 :elements [(chord :chord :iii :triad :minor 
+                                     :notes [52 59 56])]}])
+
+(fact "add-notes adds notes to every chord"
+  (add-notes
+   {:key (mode) :figures {"Intro" input-prog "Outro" input-prog}})
+  => {:key (mode) :figures {"Intro" output-prog "Outro" output-prog}})
 
 (def input-song 
   {:title "Wurstbrot I"
@@ -78,36 +73,109 @@
    :figures {"Intro" input-prog}
    :structure ["Intro"]})
 
-
-(def output-prog 
-  [{:bar 1 
-    :elements [(assoc (chord :duration 1/2) :notes [48 55 52])
-               (assoc (chord :chord :ii :triad :minor
-                             :beat 3 :duration 1/2) :notes [50 57 54])]}
-   {:bar 2 :elements [(assoc (chord :chord :iii :triad :minor) 
-                             :notes [52 59 56])]}])
-
 (def output-song (assoc input-song :figures {"Intro" output-prog}))
 
-(def better-output-song {:bpm 120 
-                  :progression output-prog})
-
-(fact "add-pb-inf for multiple figures in song"
-  (add-playback-information {:key (mode)
-                             :figures {"Intro" input-prog
-                                       "Outro" input-prog}})
-  => {:key (mode)
-      :figures {"Intro" output-prog
-                "Outro" output-prog}})
-
 (fact "integration test"
-  (add-playback-information input-song) => output-song)
+  (add-notes input-song) => output-song)
 
-;; TODO process the structure, map the figure progressions and add 
-;;      :progression field to song
-;; TODO in player.clj, make function to playback the resulting song
-;; TODO figures in chord-scope and in song-scope: maybe another name?
-;; TODO key (music lingo) and key (map) are ambiguous... solution?
-;; TODO remove overtone autoloading on autotest!
-;; TODO key => mode? need to research
-;; TODO chord: change :chord to :degree
+(facts "about song->seq"
+  (facts "it returns a seq from a song with"
+    (fact "one chord"
+      (song->seq (h/song)) => (h/prog 1 1))
+    (fact "two chords"
+      (song->seq (h/song :figures {:in (h/prog 1 2)})) => (h/prog 1 2))
+    (fact "more than one bar"
+      (song->seq (h/song :figures {:in (h/prog 2 1)})) => (h/prog 2 1))
+    (fact "more than one element in structure"
+      (song->seq (h/song :structure [:in :in])) => (h/prog 2 1))
+    (fact "more complex structure"
+      (song->seq (h/song 
+                  :structure [:in :in :out]
+                  :figures {:in (h/prog 1 2)
+                            :out (h/prog 2 2)})) => (h/prog 4 2))))
+
+(facts "about count-up-bars"
+  (fact "it numbers bars consecutively"
+    (#'jazzler.overtone-format/count-up-bars [{:bar 1} {:bar 1}]) 
+    => [{:bar 1} {:bar 2}]))
+
+(facts "about each-chord"
+  (fact "it takes a song and a function"
+    (each-chord identity (h/song)))
+
+  (fact "it adds a field to every chord in every figure"
+    (each-chord #(assoc % :test 1)
+                {:figures {:i [{:elements [{} {}]}]
+                           :j [{:elements [{} {}]}]}}) 
+    => {:figures {:i [{:elements [{:test 1} {:test 1}]}]
+                  :j [{:elements [{:test 1} {:test 1}]}]}}))
+
+(facts "about each-figure"
+  (fact "it edits one figure"
+    (each-figure (fn [_] :roflcopter) {:figures {:i [:wurstbrot]}})
+    => {:figures {:i :roflcopter}})
+  (fact "it edits several figures"
+    (each-figure (fn [_] :done) {:figures {:i [:wurstbrot] :ii 2}})
+    => {:figures {:i :done :ii :done}})
+  (fact "it can change stuff in a meaningful way"
+    (each-figure 
+     #(map quarters %)
+     {:figures {:fig [{:elements [{}]}]}})
+    => {:figures {:fig [{:elements [{:beat 1 :duration 1/4}
+                                    {:beat 2 :duration 1/4}
+                                    {:beat 3 :duration 1/4}
+                                    {:beat 4 :duration 1/4}]}]}}))
+
+(facts "about each-bar"
+  (fact "it applies the function on the bars of one figure"
+    (each-bar (fn [_] :done) [{} {}])
+    => [:done :done])
+  (fact "quarters"
+    (each-bar quarters [{:bar 1 :elements [(h/chord)]}])
+    => [{:bar 1 :elements [(h/chord :beat 1 :duration 1/4)
+                           (h/chord :beat 2 :duration 1/4)
+                           (h/chord :beat 3 :duration 1/4)
+                           (h/chord :beat 4 :duration 1/4)]}]))
+
+(facts "about quarter rhythm strategy"
+  (fact "a single chord is translated to 4 beats of this chord"
+    (quarters {:elements [(h/chord)]})
+    => {:elements [(h/chord :beat 1 :duration 1/4)
+                   (h/chord :beat 2 :duration 1/4)
+                   (h/chord :beat 3 :duration 1/4)
+                   (h/chord :beat 4 :duration 1/4)]})
+  (fact "two chords are translated to beats of each chord"
+    (quarters {:elements [(h/chord :chord :i)
+                          (h/chord :chord :ii)]}) 
+    => {:elements [(h/chord :chord :i :beat 1 :duration 1/4)
+                   (h/chord :chord :i :beat 2 :duration 1/4)
+                   (h/chord :chord :ii :beat 3 :duration 1/4)
+                   (h/chord :chord :ii :beat 4 :duration 1/4)]})
+  (fact "in case of three chords, expand first to be repeated"
+    (quarters {:elements [(h/chord :chord :i)
+                          (h/chord :chord :ii)
+                          (h/chord :chord :iii)]})
+    => {:elements [(h/chord :chord :i :beat 1 :duration 1/4)
+                   (h/chord :chord :i :beat 2 :duration 1/4)
+                   (h/chord :chord :ii :beat 3 :duration 1/4)
+                   (h/chord :chord :iii :beat 4 :duration 1/4)]})
+  (fact "four chords equal lengths"
+    (quarters {:elements (repeat 4 (h/chord))}) 
+    => {:elements [(h/chord :beat 1 :duration 1/4)
+                   (h/chord :beat 2 :duration 1/4)
+                   (h/chord :beat 3 :duration 1/4)
+                   (h/chord :beat 4 :duration 1/4)]}))
+(fact "apply-rhythm works for one bar"
+  (apply-rhythm quarters (h/song))
+  => {:bpm 120, 
+       :figures 
+      {:in [{:bar 1 
+             :elements [{:beat 1, :chord :i, :duration 1/4 
+                         :notes [48 55 52], :triad :major}
+                        {:beat 2, :chord :i, :duration 1/4
+                         :notes [48 55 52], :triad :major}
+                        {:beat 3, :chord :i, :duration 1/4 
+                         :notes [48 55 52], :triad :major}
+                        {:beat 4, :chord :i, :duration 1/4
+                         :notes [48 55 52], :triad :major}]}]} 
+      :key {:root :C3, :triad :major}, :structure [:in]}) 

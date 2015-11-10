@@ -13,8 +13,8 @@
 (defn progression 
   [& content]
   (cond
-    (seq? content) [:progression content]
-    (nil? content) [:progression '()]
+    (seq? content) {:figures {:progression content}}
+    (nil? content) {:figures {:progression '()}}
     ;; :else [:progression (list content)];unused
 ))
 
@@ -39,7 +39,7 @@
 
 (def song-grammar
   (str 
-   "song = title <nl> progression "
+   "<song> = title <nl> progression "
    "title = <'Song:'> <wsfull> name "
    "<name> = #'[A-Za-z0-9 ]+'"
    "progression = <'['>barOrChord? (<wsfull> barOrChord)* <']'> "
@@ -86,4 +86,5 @@
 (defn parse-song [string]
   (->> string
        (song-parser)
-       (i/transform transformations)))
+       (i/transform transformations)
+       (apply merge)))
