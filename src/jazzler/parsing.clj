@@ -1,36 +1,45 @@
 (ns jazzler.parsing
   (:gen-class)
-  (:require [instaparse.core :as i]))
+  (:require [clojure.string :as s]
+            [instaparse.core :as i]))
+
+(defn string->degree 
+  "Converts a string degree into a keyword degree as used in overtone
+  Example: \"I\" => :i"
+  [s] 
+  {:pre [(string? s)]}
+  (keyword (s/lower-case s)))
 
 (defn progression 
   [& content]
   (cond
-    (seq? content) [:progression content]
-    (nil? content) [:progression '()]
-    :else [:progression (list content)];unused
+    (seq? content) {:figures {:progression content}}
+    (nil? content) {:figures {:progression '()}}
+    ;; :else [:progression (list content)];unused
 ))
 
-(defn bar [& content]
-  [:bar content])
+(defn title [title] {:title title})
 
-(defn barchord [content]
-  [:bar (list content)])
+(defn add-bar-numbers [bars]
+  (map #(assoc %1 :bar %2) bars (iterate inc 1)))
 
-(defn majorchord [root]
-  [:chord root :major])
+(defn bar [& content] {:elements content})
 
-(defn minorchord [root]
-  [:chord root :minor])
+(defn barchord [content] {:elements (list content)})
 
-(defn diminished [[_ root]]
-  [:chord root :diminished])
+(defn majorchord [root] {:chord (string->degree root) 
+                         :triad :major})
 
-(defn augmented [[_ root]]
-  [:chord root :augmented])
+(defn minorchord [root] {:chord (string->degree root) 
+                         :triad :minor})
+
+(defn diminished [{root :chord}] {:chord root, :triad :diminished})
+
+(defn augmented [{root :chord}] {:chord root, :triad :augmented})
 
 (def song-grammar
   (str 
-   "song = title <nl> progression "
+   "<song> = title <nl> progression "
    "title = <'Song:'> <wsfull> name "
    "<name> = #'[A-Za-z0-9 ]+'"
    "progression = <'['>barOrChord? (<wsfull> barOrChord)* <']'> "
@@ -65,6 +74,7 @@
    :minorchord minorchord
    :diminished diminished
    :augmented augmented
+   :title title
    :bar bar})
 
 (defn parse-progression [string]
@@ -76,4 +86,5 @@
 (defn parse-song [string]
   (->> string
        (song-parser)
-       (i/transform transformations)))
+       (i/transform transformations)
+       (apply merge)))

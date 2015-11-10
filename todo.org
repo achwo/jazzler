@@ -1,0 +1,56 @@
+* [#C] Refactoring
+** TODO [#C] remove overtone autoloading in autotest
+** TODO [#C] in chord, rename :chord to :degree
+** TODO [#C] decouple from overtone
+** TODO [#C] in key / mode, change format :C3 to :C, as semantically better
+** TODO [#C] make test-helper module for useful functions, 
+   like overtone-format-test.chord?
+** TODO move helpers in player_test to test_helpers
+** TODO fix bar creating helper function to have the correct beat numbers
+** TODO use standardized usage style / pre-/ post-conditions
+* [#B] Research
+** TODO what are the correct terms for
+*** key / mode
+*** elements of bar
+** TODO key (~ mode) and key (map) are ambiguous, what to do? 
+** TODO when to gen-class?
+* [#A] Features
+** TODO [#B] update grammar to use structure field
+** DONE [#A] in player.clj, make function to playback song
+*** DONE get to work for one figure
+*** DONE get to work for more
+*** DONE move test helpers to corresponding module
+** TODO [#A] update main to play a standard song with no parameters
+* [#A] Architecture
+** TODO [#A] Think about the architecture of the modules
+*** What are possible ways to structure?
+*** What are the main pros and cons of each way?
+** TODO [#B] In Repl: have a server in the background
+*** it takes commands of the repl, but standardized
+    example: incoming is a string progression
+    before the server, it gets
+**** identified as a progression
+**** enhanced by information, that it is a progression
+**** then send to the server
+**** the returning value is sent back to the client
+**** maybe stripped by the enhanced information at the start
+** TODO [#B] generally structure as a server architecture
+*** why: we can restart it without ns collisions etc.
+*** how: see parens of the dead
+** make transformations SOLID
+*** one function per transformation
+*** composable via ->
+* [#B] Workflow
+** TODO [#B] Switch files faster in emacs
+** TODO [#C] Add lein-ancient to check for outdated deps
+** TODO [#B] check out clj-refactor
+** TODO [#C] learn to use magit for emacs
+** TODO [#B] get to reload everything for midje autotest
+*** why: when moving a function to another ns, i have to restart the repl
+*** TODO how?
+* Bugfixing
+** TODO [#A] add duration and beat fields to chords
+*** Also, the error message that results is very bad!
+**** TODO Add better error handling, possible through preconditions!
+** TODO in grammar, allow indentation and generally more whitespace
+   
