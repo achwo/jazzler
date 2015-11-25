@@ -12,4 +12,5 @@
                        :dev {:source-paths ["dev"]
                              :dependencies [[midje "1.8.2"]
                                             [rhizome "0.2.5"]]
+                             :plugins [[lein-midje "3.2"]]
                              }})

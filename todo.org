@@ -1,5 +1,5 @@
 * [#C] Refactoring
-** TODO [#A] remove overtone autoloading in autotest
+** find a way to remove the need of whitelisting the tests in travis
 ** TODO [#C] in chord, rename :chord to :degree
 ** TODO [#C] decouple from overtone
 ** TODO [#C] in key / mode, change format :C3 to :C, as semantically better
@@ -62,9 +62,6 @@
 ** TODO [#C] Add lein-ancient to check for outdated deps
 ** TODO [#B] check out clj-refactor
 ** TODO [#C] learn to use magit for emacs
-** TODO [#B] get to reload everything for midje autotest
-*** why: when moving a function to another ns, i have to restart the repl
-*** TODO how?
 * Bugfixing
 ** TODO [#A] add duration and beat fields to chords
 *** Also, the error message that results is very bad!
