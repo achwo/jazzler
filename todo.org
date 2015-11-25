@@ -1,5 +1,5 @@
 * [#C] Refactoring
-** TODO [#C] remove overtone autoloading in autotest
+** TODO [#A] remove overtone autoloading in autotest
 ** TODO [#C] in chord, rename :chord to :degree
 ** TODO [#C] decouple from overtone
 ** TODO [#C] in key / mode, change format :C3 to :C, as semantically better
@@ -13,18 +13,24 @@
 *** key / mode
 *** elements of bar
 ** TODO key (~ mode) and key (map) are ambiguous, what to do? 
-** TODO when to gen-class?
+** DONE when to gen-class?
+*** it generates a class from additional parameters
+*** only necessary, when we want to use our code from java
 * [#A] Features
 ** TODO [#B] update grammar to use structure field
 ** DONE [#A] in player.clj, make function to playback song
 *** DONE get to work for one figure
 *** DONE get to work for more
 *** DONE move test helpers to corresponding module
-** TODO [#A] update main to play a standard song with no parameters
+** DONE [#A] update main to play a standard song with no parameters
+** TODO Elaborate REPL
+*** TODO draw state diagram
+*** save and load file
+*** close file
+*** new song
+*** when song open: grammar rules
+*** undo and redo
 * [#A] Architecture
-** TODO [#A] Think about the architecture of the modules
-*** What are possible ways to structure?
-*** What are the main pros and cons of each way?
 ** TODO [#B] In Repl: have a server in the background
 *** it takes commands of the repl, but standardized
     example: incoming is a string progression
@@ -34,10 +40,21 @@
 **** then send to the server
 **** the returning value is sent back to the client
 **** maybe stripped by the enhanced information at the start
+** DONE [#A] Think about the architecture of the modules
+*** What are possible ways to structure?
+**** library as standalone package, imported from repl, gui, overtone player, etc. via leiningen
+**** other than that, packages for chords, transformations, notes, parsing, ...
+*** What are the main pros and cons of each way?
+**** The most important thing is, that we don't have circular dependencies.
+**** To achieve that, minimize the dependencies of each module.
+**** Ideally, there's only one direction of dependency.
+**** To get a structure like that, it's a good idea to structure in a way, that the
+     packages go from the most concrete to the most abstract/high-level.
+     That way, each package contains only one level of abstraction.
 ** TODO [#B] generally structure as a server architecture
 *** why: we can restart it without ns collisions etc.
 *** how: see parens of the dead
-** make transformations SOLID
+** TODO make transformations SOLID
 *** one function per transformation
 *** composable via ->
 * [#B] Workflow

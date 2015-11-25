@@ -9,8 +9,7 @@
             :main ^:skip-aot jazzler.repl
             :target-path "target/%s"
             :profiles {:uberjar {:aot :all}
-                       :dev {:dependencies [[midje "1.8.1"]
+                       :dev {:source-paths ["dev"]
+                             :dependencies [[midje "1.8.2"]
                                             [rhizome "0.2.5"]]
-                             :plugins [[lein-midje "3.2"]]
-                             :repl {:dependencies [[midje "1.8.1"]]}
-                             :repl-options {:init (use 'midje.repl)}}})
+                             }})
