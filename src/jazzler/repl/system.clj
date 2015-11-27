@@ -1,19 +1,28 @@
 (ns jazzler.repl.system
-  (:require [jazzler.repl.io :as io]))
+  (:require [jazzler.repl.states :as state]
+            [jazzler.repl.state-machine :as sm]))
 
-(defn system [] {:error nil
-               :path nil
-               :song nil
-               :quit false})
+(defn system [] 
+  (merge (sm/state-machine)
+         {:error nil
+          :result nil}))
+;; cwd filepath song
 
-(defn shutdown [state])
+(def transitions
+  {:init  {:else :ready}
+   :ready {:open :song
+           :new :song
+           :else :ready}
+   :song  {:close :ready
+           :else :song}
+   :all   {:error :exit
+           :exit :shutdown}})
 
-(defn clear-result [state] (assoc state :result nil))
+(def states 
+  {:init  state/init
+   :ready state/ready
+   :song  state/song
+   :exit  state/exit})
 
-(defn clear-transition [state] (assoc state :transition nil))
-
-(defn output-result [{result :result :as state}])
-
-(defn greet []
-  (io/writeln "Welcome to Jazzler 0.1")
-  (io/writeln "======================"))
+(defn start []
+  (sm/run (system) states transitions))

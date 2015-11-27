@@ -1,37 +1,33 @@
 (ns jazzler.repl.commands
-  (:require [clojure.string :as s]
-            [jazzler.repl.io :as io]))
+  (:require [jazzler.repl.io :as io]
+            [jazzler.repl.runtime :as rt]
+            [clojure.string :as s]))
 
-;; TODO: io handler in state? -> keine dependency
 
-(defn- error [state s]
-  (assoc state :error s))
+(defn unknown-command [system args]
+  (rt/error system (str "Unknown command: " args)))
 
-(defn- file [state file]
-  (assoc state :file file))
-
-(defn unknown-command [state & s]
-  (error state (str "Unknown command: " s)))
-
-(defn open [state & s]
+(defn open [system args]
   (io/writeln "open")
   ;; TODO actually open and load file
-  (file state :dummy))
+  (rt/file system (second args)))
 
-(defn close [state & s]
+(defn close [system args]
   (io/writeln "close")
-  (file state nil))
+  (rt/file system nil))
 
-(defn exit [state & s]
-  (assoc state :transition :exit))
+(defn exit [system args]
+  (rt/shutdown system))
 
-;; (p/pprint (parser/parse-progression input))
+(def commands
+  {:open open
+   :close close
+   :exit exit
+   :quit exit})
 
-(defn comm [s]
-  (let [words (s/split s #"\s+")]
-    (case (first words)
-      "open" [open (rest words)]
-      "close" [close (rest words)]
-      "exit" [exit (rest words)]
-      "quit" [exit (rest words)]
-      [unknown-command words])))
+(defn command 
+  "Returns a tuple with a fn and a seq of arguments."
+  [s]
+  (let [words (s/split s #"\s+")
+        comm ((keyword (first words)) commands)]
+    [comm words]))

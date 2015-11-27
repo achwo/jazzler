@@ -8,6 +8,12 @@
 ** TODO move helpers in player_test to test_helpers
 ** TODO fix bar creating helper function to have the correct beat numbers
 ** TODO use standardized usage style / pre-/ post-conditions
+** reduce dependencies (i.e. for jazzler.repl.io) by injecting it 
+   from system
+** write tests for jazzler.repl.states (after io is injected, since
+   testing side effects sucks
+** move commands list from commands to system and inject?
+   reason: is configuration
 * [#B] Research
 ** TODO what are the correct terms for
 *** key / mode

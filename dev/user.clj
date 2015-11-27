@@ -4,5 +4,7 @@
             [midje.repl :refer :all]
             [jazzler.song :refer :all]
             [jazzler.repl :refer :all]
+            [jazzler.repl.system :as sys]
+            [jazzler.repl.state-machine :as sm]
             ;; [jazzler.player :refer [play-song play-chord]]
             ))
