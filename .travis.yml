@@ -1,2 +1,2 @@
 language: clojure
-script: lein midje jazzler.overtone-format-test jazzler.parsing-test
+script: lein midje jazzler.overtone-format-test jazzler.parsing-test jazzler.repl.*
