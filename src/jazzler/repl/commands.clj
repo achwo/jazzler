@@ -29,5 +29,5 @@
   "Returns a tuple with a fn and a seq of arguments."
   [s]
   (let [words (s/split s #"\s+")
-        comm ((keyword (first words)) commands)]
+        comm ((keyword (first words)) commands unknown-command)]
     [comm words]))

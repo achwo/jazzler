@@ -24,4 +24,18 @@
 (fact "state-machine contains the necessary fields"
   (keys (state-machine)) => (contains #{:state :transition}))
 
-;; TODO: I can't think of a test for run right now...
+(fact "transition updates :state and :transition"
+  (let [a-sys {:state :init :transition :done}]
+    (transition a-sys transitions) => {:state :ready :transition :else}))
+
+(declare init)
+
+(fact "run exits on shutdown"
+  (let [a-sys {:state :init :transition :quit}
+        trans {:init {:quit :shutdown}}
+        state-fns {:init #(init %)}]
+    (run a-sys state-fns trans) => nil
+    (provided (init a-sys) => a-sys)))
+
+
+;; TODO: for a run test, i want to have injected io functions 

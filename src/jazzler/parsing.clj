@@ -40,7 +40,8 @@
 (def song-grammar
   (str 
    "<song> = title <nl> progression "
-   "title = <'Song:'> <wsfull> name "
+   "title = <'Song:' | 'Title:'> <wsfull> name "
+   "<title-value> = name"
    "<name> = #'[A-Za-z0-9 ]+'"
    "progression = <'['>barOrChord? (<wsfull> barOrChord)* <']'> "
    "<barOrChord> = bar | bchord "

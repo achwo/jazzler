@@ -1,0 +1,21 @@
+# Building
+
+Building is complex, because Overtone is "special".
+
+## Prerequisits
+
+- :main in project.clj musst set ^{:skip-aot true}
+- {:aot :all} musn't be set on any profile
+
+## Build
+
+run from ./jazzler
+
+1. jar uberjar
+2. mv target/uberjar/jazzler-version-standalone.jar .
+3. lein compile jazzler.repl (or whatever the main is)
+4. jar uf jazzler-version-standalone.jar -C target/base+system+user+dev/classes "jazzler"
+
+## Run
+
+Run with ```java -jar jazzler-version-standalone.jar```
