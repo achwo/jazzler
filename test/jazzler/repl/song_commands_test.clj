@@ -13,3 +13,14 @@
       (title {:song {:title "Another title"}} a-command) => a-system)
     (fact "it returns the current title, when args are empty"
       (title a-system ["title"]) => (assoc a-system :result a-title))))
+
+(fact "unknown returns an error"
+  (keys (unknown {} ["not-known" "arg"])) => (contains #{:error}))
+
+(facts "about command"
+  (fact "it returns a seq of a fn and a list of args"
+    (command "title Song Title") => [title ["title" "Song" "Title"]])
+  (fact "it returns unknown as fn, if it does not exist"
+    (command "what random") => [unknown ["what" "random"]])
+  (fact "it treats empty string as unknown command"
+    (command "") => [unknown [""]]))

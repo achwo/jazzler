@@ -8,10 +8,10 @@
 ;; TODO: it would be really nice to have an exception if this fails on use
 (def title-parser #(p/song-parser % :start :title-value))
 
-(defn transform-title [[title]] title)
+(defn- transform-title [[title]] title)
 
-(defn unknown-command [system args]
-  (rt/error system (str "Unknown command: " args)))
+(defn unknown [system args]
+  (rt/error system (str "Unknown command: " (first args) " " (rest args))))
 
 (defn exit [system args]
   (rt/shutdown system))
@@ -38,7 +38,5 @@
   "Returns a tuple with a fn and a seq of arguments."
   [s]
   (let [words (s/split s #"\s+")
-        comm ((keyword (first words)) commands)]
-    (if-not comm 
-      [unknown-command words]
-      [comm words])))
+        comm ((keyword (first words)) commands unknown)]
+    [comm words]))
