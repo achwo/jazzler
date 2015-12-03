@@ -1,4 +1,4 @@
-(defproject jazzler "0.1.0-SNAPSHOT"
+(defproject jazzler "0.1.0"
   :description "a language for jazz music composition"
   :url "https://github.com/engineduck/jazzler"
   :license {:name "GNU General Public License, V3.0"

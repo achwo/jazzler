@@ -14,6 +14,7 @@
    testing side effects sucks
 ** move commands list from commands to system and inject?
    reason: is configuration
+** remove assoc statements everywhere, let the defining modules do it
 * [#B] Research
 ** TODO what are the correct terms for
 *** key / mode
@@ -69,6 +70,7 @@
 ** TODO [#B] check out clj-refactor
 ** TODO [#C] learn to use magit for emacs
 * Bugfixing
+** TODO [#A] in repl, when entering a wrong command, it crashes with nullpointer
 ** TODO [#A] add duration and beat fields to chords
 *** Also, the error message that results is very bad!
 **** TODO Add better error handling, possible through preconditions!

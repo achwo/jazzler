@@ -9,17 +9,28 @@
   ;; TODO: is this the right place? changes transition
   (assoc system :transition :exit))
 
-(defn clear-result [system] (assoc system :result nil))
-
-(defn output-result [{result :result :as system}])
+(defn result 
+  ([system] (:result system))
+  ([system s] (assoc system :result s)))
 
 (defn error [system s]
   (assoc system :error s))
 
+(defn clear-result-and-error [system] 
+  (-> system
+      (result nil)
+      (error nil)))
+
+(defn output-result [system] (result system))
+
 (defn file [system file]
   (assoc system :file file))
 
-(defn error [system]
+(defn song 
+  ([system] (:song system))
+  ([system song] (assoc system :song song)))
+
+(defn runtime-error [system]
   (io/writeln "Something went horribly wrong!") 
   (io/writeln (:error system))
   (shutdown system))

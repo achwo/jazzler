@@ -7,7 +7,13 @@
   (read-line))
 
 (defn print-result [{result :result :as state}]
-  (writeln result)
+  (when result
+    (writeln result))
+  state)
+
+(defn print-error [{error :error :as state}]
+  (when error
+    (writeln (str "Error: " error)))
   state)
 
 (defn write-prompt [state]

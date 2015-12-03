@@ -9,14 +9,14 @@
 ;; cwd filepath song
 
 (def transitions
-  {:init  {:else :ready}
-   :ready {:open :song
-           :new :song
-           :else :ready}
-   :song  {:close :ready
-           :else :song}
+  {:init  {:else  :song}
+   :ready {:open  :song
+           :new   :song
+           :else  :ready}
+   :song  {;:close :ready
+           :else  :song}
    :all   {:error :exit
-           :exit :shutdown}})
+           :exit  :shutdown}})
 
 (def states 
   {:init  state/init
