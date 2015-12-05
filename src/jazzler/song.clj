@@ -15,3 +15,9 @@
    (:title song))
   ([song s]
    (assoc song :title s)))
+
+(defn progression
+  ([song]
+   (:progression song))
+  ([song s]
+   (assoc song :progression s)))

@@ -37,6 +37,15 @@
 *** new song
 *** when song open: grammar rules
 *** undo and redo
+** TODO song mode functions
+*** song: string representation of the song
+*** key: set key (also in parser)
+*** bpm: set bpm (also in parser)
+*** set vars and define structure
+*** play, stop
+*** save, load, close
+*** help
+*** redo, undo
 * [#A] Architecture
 ** TODO [#B] In Repl: have a server in the background
 *** it takes commands of the repl, but standardized

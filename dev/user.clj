@@ -9,6 +9,7 @@
             [jazzler.repl.runtime :as rt]
             [jazzler.repl.song-commands :as sc]
             [jazzler.repl.system :as sys]
+            [jazzler.song :as so]
             [jazzler.repl.state-machine :as sm]
             ;; [jazzler.player :refer [play-song play-chord]]
             ))

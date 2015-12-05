@@ -6,6 +6,16 @@ A Clojure library designed to compose jazz music.
 
 `lein run` to start the REPL, which can be used to evaluate progressions.
 
+## REPL commands
+
+The following commands are available:
+
+help => shows this help screen
+help <command> => shows detail info on the command
+title <arg?> => shows or sets (if no arg given) the title value 
+progression <arg?>=> shows or sets (if no arg given) the progression value
+exit, quit => quit the application
+
 ## Syntax
 
 The Jazzler language uses roman numerals to represent chords. The numerals indicate the scale degree according to the root note, which is defined by the scale of the song.
