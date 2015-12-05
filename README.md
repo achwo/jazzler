@@ -11,9 +11,13 @@ A Clojure library designed to compose jazz music.
 The following commands are available:
 
 help => shows this help screen
+
 help <command> => shows detail info on the command
+
 title <arg?> => shows or sets (if no arg given) the title value 
+
 progression <arg?>=> shows or sets (if no arg given) the progression value
+
 exit, quit => quit the application
 
 ## Syntax
