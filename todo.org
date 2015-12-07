@@ -79,6 +79,7 @@
 ** TODO [#B] check out clj-refactor
 ** TODO [#C] learn to use magit for emacs
 * Bugfixing
+** TODO in grammar, allow umlauts, ß, and maybe punctuation chars to title
 ** TODO [#A] in repl, when entering a wrong command, it crashes with nullpointer
 ** TODO [#A] add duration and beat fields to chords
 *** Also, the error message that results is very bad!

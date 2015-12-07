@@ -2,11 +2,8 @@
   (:require [jazzler.repl.io :as io]
             [jazzler.repl.runtime :as r]
             [jazzler.song :as s]
-            [jazzler.parsing :as p]
+            [jazzler.parser.system :as p]
             [clojure.string :as str]))
-
-;; TODO: it would be really nice to have an exception if this fails on use
-(def title-parser #(p/song-parser % :start :title-value))
 
 (defn- transform-title [[title]] title)
 
@@ -20,7 +17,7 @@
   [ctx [command-string & [title-string]]]
   (if (nil? title-string)
     (r/result ctx (s/title (r/song ctx)))
-    (let [title-parse (title-parser title-string)] 
+    (let [title-parse (p/parse-title-val title-string)] 
       (if (= (type title-parse) instaparse.gll.Failure)
         (r/error ctx "The given title is invalid!")
         (r/song ctx (s/title (r/song ctx) 
