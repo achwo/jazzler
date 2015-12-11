@@ -11,15 +11,22 @@
 
 (defn result 
   ([system] (:result system))
-  ([system s] (assoc system :result s)))
+  ([system s & options] 
+   (if options 
+     (assoc system :result s :print-options options)
+     (assoc system :result s))))
 
 (defn error [system s]
   (assoc system :error s))
 
+(defn clear-print-options [system]
+  (dissoc system :print-options))
+
 (defn clear-result-and-error [system] 
   (-> system
       (result nil)
-      (error nil)))
+      (error nil)
+      (clear-print-options)))
 
 (defn output-result [system] (result system))
 

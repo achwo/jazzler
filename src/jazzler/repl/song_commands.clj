@@ -51,6 +51,14 @@
           (r/error ctx "At least one figure is not defined!")
           (r/song ctx (s/structure (r/song ctx) struc-parse)))))))
 
+(defn info
+  [ctx _]
+  (r/result ctx ctx :pprint))
+
+(defn song
+  [ctx _]
+  (r/result ctx (r/song ctx) :pprint))
+
 (def help-s
   {:general "The following commands are available:
 help shows this help screen
@@ -58,6 +66,8 @@ help <command> shows detail info on the command
 title <arg?> shows or sets (if no arg given) the title value 
 structure <args> shows or sets the structure
 <Figurename> = <prog> defines a Figure, see 'help figure'
+info shows the current datastructure of the repl
+song shows the current datastructure of the song
 exit, quit quit the application
 
 Use 'help <command>' for more info and syntactic information."
@@ -89,7 +99,9 @@ I. e. [I [IV I] V I] would contain four bars."
 Define a figure with '<figurename> = <progression>'
 Figurename has to be a single uppercase word.
 Example: Intro = [I [IV I]]
-For progression syntax, see 'help progression'"})
+For progression syntax, see 'help progression'"
+   :info "Shows the current datastructure of the repl."
+   :song "Shows the current datastructure of the song."})
 
 (defn help
   [ctx [cmd-str & [detail]]]
@@ -101,6 +113,8 @@ For progression syntax, see 'help progression'"})
   {:help help
    :title title
    :structure structure
+   :info info
+   :song song
    :exit exit
    :quit exit
    })

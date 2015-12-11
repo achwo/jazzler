@@ -67,3 +67,18 @@
     => {:song {:figures 
                {"F" 1
                 "Fig" [{:elements [(chord :i :major)]}]}}}))
+
+(facts "about info"
+  (fact "it shows the datastructure of the repl"
+    (info {:song {:bpm 120}} []) 
+    => {:song {:bpm 120} 
+        :result {:song {:bpm 120}}
+        :print-options [:pprint]}))
+
+(facts "about song"
+  (fact "it shows nil, if the song isn't defined"
+    (song {} ["song"]) => {:result nil :print-options [:pprint]})
+  (fact "it shows the song structure, if it is defined"
+    (song {:song {:bpm 120}} []) => {:song {:bpm 120} 
+                                     :result {:bpm 120}
+                                     :print-options [:pprint]}))
