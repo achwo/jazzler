@@ -2,11 +2,7 @@
 
 ;; TODO: put song constructers and changers here
 
-(defn- song []
-  ;; this is incomplete, only for documentation
-  {:key {:root :C3 :triad :major}
-   :bpm 80
-   :structure [:progression]})
+(defn song [] {})
 
 (defn title 
   "When used without string argument, it returns the current title.
@@ -16,8 +12,18 @@
   ([song s]
    (assoc song :title s)))
 
-(defn progression
+(defn structure
   ([song]
-   (:progression song))
+   (:structure song))
+  ([song seq]
+   (assoc song :structure seq)))
+
+(defn figure
   ([song s]
-   (assoc song :progression s)))
+   (get (:figures song) s))
+  ([song k v]
+   (assoc-in song [:figures k] v)))
+
+(defn chord
+  ([root triad]
+   {:chord root :triad triad}))

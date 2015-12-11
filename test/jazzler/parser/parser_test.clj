@@ -1,8 +1,32 @@
 (ns jazzler.parser.parser-test
   (:use midje.sweet)
-  (:require [jazzler.parser.system :refer [failure? parse parse-title]]
-            [jazzler.parser.parser :refer :all]))
+  (:require [jazzler.parser.system :refer :all]
+            [jazzler.parser.parser :refer :all]
+            [jazzler.parser.transformer :as t]))
 
+(defn chord [root triad] {:chord root, :triad triad})
+
+;; TODO: use this for figprog testing
+(facts "about parse progression"
+  (let [chord-I (chord :i :major)
+        chord-IV (chord :iv :major)]
+    (fact "it can be empty"
+      (parse-progression "[]") => nil)
+    (fact "it can have bars with one chord"
+      (parse-progression "[[I]]") 
+      => [{:elements [chord-I]}])
+    (fact "it can have aliases of chordname for a whole bar"
+      (parse-progression "[I]") 
+      => [{:elements [chord-I]}])
+    (fact "a bar can contain more than one chord"
+      (parse-progression "[[I IV]]") 
+      => [{:elements [chord-I chord-IV]}])
+    (fact "it can contain more than one bar"
+      (parse-progression "[[I] [IV]]") 
+      =>[{:elements [chord-I]} {:elements [chord-IV]}]
+      (parse-progression "[I IV]") 
+      => [{:elements [chord-I]}
+          {:elements [chord-IV]}])))
 (facts "about title"
   (fact "it must not be empty"
     (failure? (parse-title "Song:")) => true
@@ -16,32 +40,6 @@
     (parse-title "Song: Bizarre Love Triangle") 
     => {:title "Bizarre Love Triangle"}))
 
-(facts "about structure"
-  (let [parse-structure (partial parse :structure)]
-    (fact "it has at least one figure"
-      (parse-structure "Structure\nIntro") 
-      => [:structure [:figSym "Intro"]])
-    (fact "it can have more than one figure in one line"
-      (parse-structure "Structure\nIntro Verse")
-      => [:structure [:figSym "Intro"] [:figSym "Verse"]])
-    (fact "it can have more than one line"
-      (parse-structure "Structure\nIntro\nChorus Verse\nChorus\nOutro")
-      => [:structure 
-          [:figSym "Intro"] 
-          [:figSym "Chorus"] [:figSym "Verse"]
-          [:figSym "Chorus"]
-          [:figSym "Outro"]])
-    (fact "it can have whitespace almost anywhere"
-      (parse-structure "Structure\n   Intro")
-      => [:structure [:figSym "Intro"]]
-      (parse-structure "Structure \nIntro")
-      => [:structure [:figSym "Intro"]]
-      (parse-structure "Structure\n\n Intro   Verse\n\tOutro")
-      => [:structure 
-          [:figSym "Intro"] 
-          [:figSym "Verse"] 
-          [:figSym "Outro"]])))
-
 (facts "about major chords"
   (let [parse-major (partial parse :majorchord)]
     (fact "major triads are written as uppercase roman numerals"
@@ -50,10 +48,10 @@
       (parse-major "VII") => {:chord :vii, :triad :major})
     (fact "edge cases"
       (every? failure? [(parse-major "VIII")
-                          (parse-major "IIII")
-                          (parse-major "VV")
-                          (parse-major "")
-                          (parse-major "IIV")]) => true)))
+                        (parse-major "IIII")
+                        (parse-major "VV")
+                        (parse-major "")
+                        (parse-major "IIV")]) => true)))
 
 (fact "minor triads are written as lowercase roman numerals"
   (let [parse-minor (partial parse :minorchord)]
@@ -73,14 +71,41 @@
   (fact "they are written as uppercase roman numerals followed by +"
     (parse :augmented "I+") => {:chord :i, :triad :augmented}))
 
-(future-facts "about variable definitions"
-  (fact "they can be parsed"
-    (failure? (parse :vardef "Varname = [I]")) =not=> true)
-  (fact ""
-    (parse :vardef "Varname = [I]") => nil)
-
+(facts "about variable definitions"
+  (fact "it has the correct structure"
+    (parse :figdef "Varname = [I]") 
+    => {:figures {"Varname" [{:elements [{:chord :i :triad :major}]}]}})
+  (fact "it works for longer progressions"
+    (parse :figdef "Fig = [[I II] III]")
+    => {:figures {"Fig" [{:elements [{:chord :i :triad :major}
+                                     {:chord :ii :triad :major}]}
+                         {:elements [{:chord :iii :triad :major}]}]}})
   )
 
-;; todo
-;; - it's reachable from main parsing
-;; - a symbol table is build
+(facts "about song-parser"
+  (fact "it parses a song, containing of title and a figure definition"
+    (parse-song "Song: Song Name\nFigure = [I [ii]]\nStructure\nFigure")
+    => {:title "Song Name"
+        :figures {"Figure" [{:elements [{:chord :i :triad :major}]}
+                            {:elements [{:chord :ii :triad :minor}]}]}
+        :structure ["Figure"]}))
+
+(facts "about structure"
+  (let [parse-structure (partial parse :structure)]
+    (fact "it has at least one figure"
+      (parse-structure "Structure\nIntro") 
+      => {:structure ["Intro"]})
+    (fact "it can have more than one figure in one line"
+      (parse-structure "Structure\nIntro Verse")
+      => {:structure ["Intro" "Verse"]})
+    (fact "it can have more than one line"
+      (parse-structure "Structure\nIntro\nChorus Verse\nChorus\nOutro")
+      => {:structure ["Intro" "Chorus" "Verse" "Chorus" "Outro"]})
+    (fact "it can have whitespace almost anywhere"
+      (parse-structure "Structure\n   Intro")
+      => {:structure ["Intro"]}
+      (parse-structure "Structure \nIntro")
+      => {:structure ["Intro"]}
+      (parse-structure "Structure\n\n Intro   Verse\n\tOutro")
+      => {:structure ["Intro" "Verse" "Outro"]})))
+

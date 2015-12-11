@@ -16,13 +16,11 @@
   {:pre [(string? s)]}
   (keyword (str/lower-case s)))
 
-(defn progression 
+(comment defn progression 
   [& content]
   (cond
     (seq? content) {:figures {:progression content}}
-    (nil? content) {:figures {:progression '()}}
-    ;; :else [:progression (list content)];unused
-))
+    (nil? content) {:figures {:progression '()}}))
 
 (defn title [title] {:title title})
 
@@ -39,3 +37,16 @@
 (defn diminished [{root :chord}] {:chord root, :triad :diminished})
 
 (defn augmented [{root :chord}] {:chord root, :triad :augmented})
+
+(defn progression [& chords] chords)
+
+(defn figsym [name]
+  name)
+
+(defn figdef 
+  [figsym prog]
+  {:figures {figsym prog}})
+
+(defn structure [& figsyms]
+  {:structure figsyms})
+
