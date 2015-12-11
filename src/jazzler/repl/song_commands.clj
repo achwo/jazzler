@@ -2,16 +2,30 @@
   (:require [jazzler.repl.io :as io]
             [jazzler.repl.runtime :as r]
             [jazzler.song :as s]
-            [jazzler.parsing :as p]
+            [jazzler.parser.system :as p]
             [clojure.string :as str]))
-
-;; TODO: it would be really nice to have an exception if this fails on use
-(def title-parser #(p/song-parser % :start :title-value))
 
 (defn- transform-title [[title]] title)
 
-(defn unknown [ctx args]
-  (r/error ctx (str "Unknown command: " (first args) " " (rest args))))
+(defn figdef [ctx [_ figsym prog]]
+  ;; INFO: Does not behave like the others, 
+  ;;       because it does not have a keyword.
+  ;; (r/song ctx (merge (r/song ctx) parse))
+  (r/song ctx (s/figure (r/song ctx)
+                        figsym prog)))
+
+(defn figval [ctx ])
+
+(defn unknown 
+  "If command is not found in commands list, this will be used.
+  Since figure definition does not have a keyword, it is processed here."
+  [ctx args]
+  (let [input (str/join " " args)
+        fig-parse (p/parse-figdef input)]
+    (if (p/valid? fig-parse)
+      (figdef ctx fig-parse)
+      (r/error ctx 
+               (str "Unknown command: " (first args) " " (rest args))))))
 
 (defn exit [ctx args]
   (r/shutdown ctx))
@@ -20,35 +34,41 @@
   [ctx [command-string & [title-string]]]
   (if (nil? title-string)
     (r/result ctx (s/title (r/song ctx)))
-    (let [title-parse (title-parser title-string)] 
-      (if (= (type title-parse) instaparse.gll.Failure)
+    (let [title-parse (p/parse-title-val title-string)] 
+      (if (p/failure? title-parse)
         (r/error ctx "The given title is invalid!")
         (r/song ctx (s/title (r/song ctx) 
                              (transform-title title-parse)))))))
 
-;; TODO: remove duplication between title and progression
-(defn progression
-  [ctx [cmd-str & [prog-str]]]
-  (if (nil? prog-str)
-    (r/result ctx (s/progression (r/song ctx)))
-    (let [prog-parse (p/parse-progression prog-str)]
-      (if (= (type prog-parse) instaparse.gll.Failure)
-        (r/error ctx "The given progression is invalid!")
-        (r/song ctx (s/progression (r/song ctx) prog-parse))))))
+(defn structure
+  [ctx [cmd-str & [struc-str]]]
+  (if (nil? struc-str)
+    (r/result ctx (s/structure (r/song ctx)))
+    (let [struc-parse (p/parse-structure struc-str)]
+      (if (p/failure? struc-parse)
+        (r/error ctx "The given structure is invalid!")
+        (if-not (every? #(s/figure (r/song ctx) %) struc-parse)
+          (r/error ctx "At least one figure is not defined!")
+          (r/song ctx (s/structure (r/song ctx) struc-parse)))))))
 
 (def help-s
   {:general "The following commands are available:
-help => shows this help screen
-help <command> => shows detail info on the command
-title <arg?> => shows or sets (if no arg given) the title value 
-progression <arg?>=> shows or sets (if no arg given) the progression value
-exit, quit => quit the application
+help shows this help screen
+help <command> shows detail info on the command
+title <arg?> shows or sets (if no arg given) the title value 
+structure <args> shows or sets the structure
+<Figurename> = <prog> defines a Figure, see 'help figure'
+exit, quit quit the application
 
 Use 'help <command>' for more info and syntactic information."
    :title "If used without args, it returns the current title value.
 A valid title string can contain of upper- and lowercase letters,
 numbers and spaces."
    :exit "Quits the application."
+   :structure "Defines the structure of the song:
+
+It contains of a list of figure names. The figures have to be defined.
+Example: structure Intro Refrain Outro"
    :progression "A valid progression consists of:
 
 Chord: A chord is represented by roman numerals: 
@@ -63,7 +83,13 @@ A bar can also be represented by only a chord, if the whole bar
 consists of only this chord. I. e. V is one bar of V.
 
 Progression: A progression is a number of bars within square braces.
-I. e. [I [IV I] V I] would contain for bars."})
+I. e. [I [IV I] V I] would contain four bars."
+   :figure "Figure Definition
+
+Define a figure with '<figurename> = <progression>'
+Figurename has to be a single uppercase word.
+Example: Intro = [I [IV I]]
+For progression syntax, see 'help progression'"})
 
 (defn help
   [ctx [cmd-str & [detail]]]
@@ -71,13 +97,13 @@ I. e. [I [IV I] V I] would contain for bars."})
     (r/result ctx helptext)
     (r/result ctx (:general help-s))))
 
-;; TODO: remove duplication between this and jazzler.repl.commands
 (def commands
   {:help help
    :title title
+   :structure structure
    :exit exit
    :quit exit
-   :progression progression})
+   })
 
 (defn command 
   "Returns a tuple with a fn and a seq of arguments."

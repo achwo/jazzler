@@ -1,7 +1,7 @@
 (ns jazzler.player
   (:gen-class)
   (:use [overtone.live])
-  (:require [jazzler.parsing :refer :all]
+  (:require [jazzler.parser.system :refer :all]
             [jazzler.overtone-format :refer :all]
             [overtone.inst.sampled-piano :refer :all]))
 (def piano sampled-piano)

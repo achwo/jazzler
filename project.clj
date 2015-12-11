@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [instaparse "1.4.1"]
                  [quantisan/overtone "0.10-SNAPSHOT"]]
-  :main ^{:skip-aot true} jazzler.repl
+  :main ^{:skip-aot true} jazzler.core
   :target-path "target/%s"
   :profiles {:dev {:source-paths ["dev"]
                    :dependencies [[midje "1.8.2"]
