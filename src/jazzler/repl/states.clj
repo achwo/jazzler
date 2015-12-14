@@ -1,6 +1,6 @@
 (ns jazzler.repl.states
   (:require [clojure.pprint :refer [pprint]]
-   [jazzler.repl.runtime :as r]
+            [jazzler.repl.runtime :as r]
             [jazzler.repl.commands :as c]
             [jazzler.repl.song-commands :as sc]
             [jazzler.song :as song]
@@ -29,7 +29,7 @@
     (r/clear-result-and-error new-system)))
 
 (defn song [system]
-  (let [title (or (song/title system) "Song")]
+  (let [title (or (song/title (song system)) "Song")]
     (io/write-prompt system title))
   (io/flush-buffer)
   (let [in (-> (io/readln) (r/sanitize))

@@ -24,10 +24,10 @@
 *** possible solution (not so beautiful): keyword for definition
 **** i.e. fig Figure = [I]
 * [#B] Research
-** TODO what are the correct terms for
-*** key / mode
+** DONE [#C] what are the correct terms for
+*** key / mode: scale = {root mode}, i.e. C Ionian
 *** elements of bar
-** TODO key (~ mode) and key (map) are ambiguous, what to do? 
+*** TODO key (~ mode) and key (map) are ambiguous, what to do? 
 * [#A] Features
 ** TODO Elaborate REPL
 *** TODO draw state diagram

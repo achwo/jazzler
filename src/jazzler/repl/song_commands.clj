@@ -6,6 +6,7 @@
             [clojure.string :as str]))
 
 (defn- transform-title [[title]] title)
+(defn- transform-tempo [[tempo]] (Integer. tempo))
 
 (defn figdef [ctx [_ figsym prog]]
   ;; INFO: Does not behave like the others, 
@@ -13,8 +14,6 @@
   ;; (r/song ctx (merge (r/song ctx) parse))
   (r/song ctx (s/figure (r/song ctx)
                         figsym prog)))
-
-(defn figval [ctx ])
 
 (defn unknown 
   "If command is not found in commands list, this will be used.
@@ -51,6 +50,19 @@
           (r/error ctx "At least one figure is not defined!")
           (r/song ctx (s/structure (r/song ctx) struc-parse)))))))
 
+(defn tempo
+  [ctx [cmd-str & [tempo-str]]]
+  (if (nil? tempo-str)
+    (r/result ctx (s/tempo (r/song ctx)))
+    (let [tempo-parse (p/parse-tempo-val tempo-str)]
+      (if (p/failure? tempo-parse)
+        (r/error ctx "The given tempo is invalid!")
+        (r/song ctx (s/tempo (r/song ctx)
+                             (transform-tempo tempo-parse)))))))
+
+(defn key
+  [ctx [cmd-str & [key-str]]])
+
 (defn info
   [ctx _]
   (r/result ctx ctx :pprint))
@@ -66,13 +78,15 @@ help: Shows this help screen
 help <command>: Shows detail info on the command
 
 title <arg?>: Shows or sets (if no arg given) the title value 
-structure <args>: Shows or sets the structure
+tempo <arg?>: Shows or sets the tempo, in bpm
+key <arg?>: Shows or sets the key
 <Figurename> = <prog>: Defines a Figure, see 'help figure'
+structure <args>: Shows or sets the structure
 
 info: Shows the current datastructure of the repl
 song: Shows the current datastructure of the song
 
-exit, quit: Quit the application
+exit: Quit the application
 
 Use 'help <command>' for more info and syntactic information."
    :title "If used without args, it returns the current title value.
@@ -104,6 +118,13 @@ Define a figure with '<figurename> = <progression>'
 Figurename has to be a single uppercase word.
 Example: Intro = [I [IV I]]
 For progression syntax, see 'help progression'"
+   :tempo "Shows or sets the speed in bpm.
+Example: tempo 80"
+   :key "Shows or sets the key.
+
+A key can be:
+- major: D#
+- minor: Ebm"
    :info "Shows the current datastructure of the repl."
    :song "Shows the current datastructure of the song."})
 
@@ -119,6 +140,8 @@ For progression syntax, see 'help progression'"
    :structure structure
    :info info
    :song song
+   :tempo tempo
+   :key key
    :exit exit
    :quit exit
    })

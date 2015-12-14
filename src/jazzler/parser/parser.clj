@@ -7,6 +7,9 @@
 
    "title = <'Song:' | 'Title:'> <wsfull> title-value "
    "<title-value> = name "
+   
+   "tempo = <'Tempo:'> <ws> tempo-value "
+   "<tempo-value> = number "
 
    "<content> = figdefs "
    "<figdefs> = figdef (<nl> figdef)* "
@@ -28,6 +31,7 @@
 
    "<name> = #'[A-Za-z0-9 ]+' "
    "figsym = #'[A-Z][a-z]*' "
+   "<number> = #'\\d+' "
 
    "eol = ws nl "
    "ws = #'[ \t]*' "

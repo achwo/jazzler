@@ -26,12 +26,12 @@
 
 (defn degree->midi-chord 
   "Returns a list of midi notes for the given degree in the given key.
-  Example: (:i {:root :C3 :triad :major}) => (48 55 52)"
-  [degree {:keys [root triad]}]
+  Example: (:i {:root :C3 :mode :major}) => (48 55 52)"
+  [degree {:keys [root mode]}]
   {:pre [(keyword? degree)]}
   (map + 
-       (triad CHORD)
-       (repeat (degree->pitch degree root triad))))
+       (mode CHORD)
+       (repeat (degree->pitch degree root mode))))
 
 (defn string->root 
   "Converts a string root into a keyword in octave 3
@@ -62,7 +62,7 @@
 [chord key])
 
 (defn convert-key [{[root triad] :key}]
-  {:key {:root (string->root root) :triad triad}})
+  {:key {:root (string->root root) :mode triad}})
 
 (defn add-notes
   "Adds :notes to every chord"

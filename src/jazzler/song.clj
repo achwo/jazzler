@@ -27,3 +27,9 @@
 (defn chord
   ([root triad]
    {:chord root :triad triad}))
+
+(defn tempo
+  ([song]
+   (:bpm song))
+  ([song i]
+   (assoc song :bpm i)))

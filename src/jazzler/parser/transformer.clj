@@ -40,6 +40,11 @@
 
 (defn progression [& chords] chords)
 
+(defn tempo-value [& s] 
+;; (Integer. s)
+  s
+)
+
 (defn figsym [name]
   name)
 

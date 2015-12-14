@@ -14,6 +14,7 @@
    :figsym t/figsym
    :title t/title
    :structure t/structure
+   :tempo-value t/tempo-value
    :bar t/bar})
 
 (defn parse 
@@ -31,6 +32,7 @@
 (def parse-figsym (partial parse :figsym))
 
 (def parse-title-val #(p/song-parser % :start :title-value))
+(def parse-tempo-val #(p/song-parser % :start :tempo-value))
 
 (defn parse-song [s]
   (->> s

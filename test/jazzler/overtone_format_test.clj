@@ -178,4 +178,4 @@
                          :notes [48 55 52], :triad :major}
                         {:beat 4, :chord :i, :duration 1/4
                          :notes [48 55 52], :triad :major}]}]} 
-      :key {:root :C3, :triad :major}, :structure [:in]}) 
+      :key {:root :C3, :mode :major}, :structure [:in]}) 

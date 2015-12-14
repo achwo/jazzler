@@ -23,15 +23,16 @@
   {:general "You are in standard mode. You can use the following commands:
 
 new: Transition to song mode with an empty song.
-load <filepath>: Load a file and go into song mode."
+load <filepath>: Load a file and go into song mode.
+help: See this helptext."
    
    })
 
 (defn help
   [ctx [cmd-str & [detail]]]
   (if-let [helptext (help-s (keyword detail))]
-    (r/result ctx helptext)
-    (r/result ctx (:general help-s))))
+    (rt/result ctx helptext)
+    (rt/result ctx (:general help-s))))
 
 (def commands
   {:help help
