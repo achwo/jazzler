@@ -60,15 +60,19 @@
   (r/result ctx (r/song ctx) :pprint))
 
 (def help-s
-  {:general "The following commands are available:
-help shows this help screen
-help <command> shows detail info on the command
-title <arg?> shows or sets (if no arg given) the title value 
-structure <args> shows or sets the structure
-<Figurename> = <prog> defines a Figure, see 'help figure'
-info shows the current datastructure of the repl
-song shows the current datastructure of the song
-exit, quit quit the application
+  {:general "You are in song mode. The following commands are available:
+
+help: Shows this help screen
+help <command>: Shows detail info on the command
+
+title <arg?>: Shows or sets (if no arg given) the title value 
+structure <args>: Shows or sets the structure
+<Figurename> = <prog>: Defines a Figure, see 'help figure'
+
+info: Shows the current datastructure of the repl
+song: Shows the current datastructure of the song
+
+exit, quit: Quit the application
 
 Use 'help <command>' for more info and syntactic information."
    :title "If used without args, it returns the current title value.

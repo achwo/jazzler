@@ -22,9 +22,9 @@
     (writeln (str "Error: " error)))
   state)
 
-(defn write-prompt [state]
+(defn write-prompt [ctx s]
   ;; TODO: current directory
-  (write "Jazzler> "))
+  (write (str s "> ")))
 
 (defn flush-buffer []
   (flush))
