@@ -36,7 +36,7 @@
     (:result (help {} ["help" "structure"])) => (:structure help-s)
     (:result (help {} ["help" "progression"])) => (:progression help-s)
     (:result (help {} ["help" "figure"])) => (:figure help-s)
-    (:result (help {} ["help" "key"])) => (:key help-s)
+    (:result (help {} ["help" "scale"])) => (:scale help-s)
     (:result (help {} ["help" "tempo"])) => (:tempo help-s))
   (fact "if command is unknown, it returns general help"
     (:result (help {} ["help" "what"])) => (:general help-s)))
@@ -89,5 +89,14 @@
   (fact "it returns the songs :bpm value"
     (:result (tempo {:song {:bpm 80}} [])) => 80)
   (fact "it sets the :bpm value"
-    (tempo {} ["tempo" "80"]) => {:song {:bpm 80}})
-  )
+    (tempo {} ["tempo" "80"]) => {:song {:bpm 80}}))
+
+(facts "about scale"
+  (fact "it returns the :scale value"
+    (:result (scale {:song {:scale "hello"}} [])) => "hello")
+  (fact "it sets the :scale value in the correct format"
+    (scale {} ["scale" "C Major"]) 
+    => {:song {:scale {:root :C :mode :major}}})
+
+
+)

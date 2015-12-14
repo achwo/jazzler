@@ -1,5 +1,6 @@
 (ns jazzler.parser.transformer
   (:require [clojure.string :as str]
+            [jazzler.song :as s]
             [instaparse.core :as i]))
 
 (defn transform [m s]
@@ -40,10 +41,9 @@
 
 (defn progression [& chords] chords)
 
-(defn tempo-value [& s] 
-;; (Integer. s)
-  s
-)
+(defn scale-value [[_ root] [_ mode]] 
+  {:root (s/string->root root)
+   :mode (s/string->mode mode)})
 
 (defn figsym [name]
   name)

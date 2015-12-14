@@ -60,8 +60,14 @@
         (r/song ctx (s/tempo (r/song ctx)
                              (transform-tempo tempo-parse)))))))
 
-(defn key
-  [ctx [cmd-str & [key-str]]])
+(defn scale
+  [ctx [cmd-str & [scale-str]]]
+  (if (nil? scale-str)
+    (r/result ctx (s/scale (r/song ctx)))
+    (let [scale-parse (p/parse-scale-val scale-str)]
+      (if (p/failure? scale-parse)
+        (r/error ctx "The given scale is invalid!")
+        (r/song ctx (s/scale (r/song ctx) scale-parse))))))
 
 (defn info
   [ctx _]
@@ -79,7 +85,7 @@ help <command>: Shows detail info on the command
 
 title <arg?>: Shows or sets (if no arg given) the title value 
 tempo <arg?>: Shows or sets the tempo, in bpm
-key <arg?>: Shows or sets the key
+scale <arg?>: Shows or sets the scale (only Major or Minor at the moment)
 <Figurename> = <prog>: Defines a Figure, see 'help figure'
 structure <args>: Shows or sets the structure
 
@@ -120,11 +126,11 @@ Example: Intro = [I [IV I]]
 For progression syntax, see 'help progression'"
    :tempo "Shows or sets the speed in bpm.
 Example: tempo 80"
-   :key "Shows or sets the key.
+   :scale "Shows or sets the scale.
 
 A key can be:
-- major: D#
-- minor: Ebm"
+- major: D# Major
+- minor: Eb Minor"
    :info "Shows the current datastructure of the repl."
    :song "Shows the current datastructure of the song."})
 
@@ -141,7 +147,7 @@ A key can be:
    :info info
    :song song
    :tempo tempo
-   :key key
+   :scale scale
    :exit exit
    :quit exit
    })

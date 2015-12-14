@@ -29,7 +29,7 @@
     (r/clear-result-and-error new-system)))
 
 (defn song [system]
-  (let [title (or (song/title (song system)) "Song")]
+  (let [title (or (song/title (r/song system)) "Song")]
     (io/write-prompt system title))
   (io/flush-buffer)
   (let [in (-> (io/readln) (r/sanitize))

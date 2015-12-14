@@ -10,6 +10,16 @@
    
    "tempo = <'Tempo:'> <ws> tempo-value "
    "<tempo-value> = number "
+   
+   "scale = <'Scale:'> <ws> scale-value "
+   "scale-value = root <' '> mode "
+
+   "root = normalroot | sharproot | flatroot "
+   "<normalroot> = #'[A-G]' "
+   "<sharproot> = 'C#' | 'D#' | 'F#' | 'G#' | 'A#' "
+   "<flatroot> = 'Db' | 'Eb' | 'Gb' | 'Ab' | 'Bb' "
+   
+   "mode = 'Major' | 'major' | 'Minor' | 'minor' "
 
    "<content> = figdefs "
    "<figdefs> = figdef (<nl> figdef)* "

@@ -1,4 +1,5 @@
-(ns jazzler.song)
+(ns jazzler.song
+  (require [clojure.string :as str]))
 
 ;; TODO: put song constructers and changers here
 
@@ -33,3 +34,29 @@
    (:bpm song))
   ([song i]
    (assoc song :bpm i)))
+
+(defn scale
+  ([song]
+   (:scale song))
+  ([song {root :root mode :mode}]
+   (assoc song :scale {:root root :mode mode})))
+
+(defn string->root
+  "The given string is expected to be a valid root note."
+  [s] (keyword (str/upper-case s)))
+
+(def scales
+  [:major :minor :ionian :aeolian])
+
+(defn string->mode
+  ([s]
+   (let [kw (keyword (str/lower-case s))]
+     (when (some #{kw} scales)
+       kw))))
+
+(defn string->scale
+  [s]
+  (let [[root-str mode-str] (str/split s #"\s" 2)
+        root (string->root root-str)
+        mode (string->mode mode-str)]
+    {:root root :mode mode}))

@@ -18,6 +18,12 @@
 ** remove duplication between song_commands and commands (command fn)
 ** remove duplication between each song_command function
 ** parser.system: exceptions on the parsers?
+** find out, how to allow mix case in instaparse, for modes (parser)
+** find a standard location for song transformation
+*** i.e. scale is completely transformed in transformer
+    but title is partially transformed in song_commands
+*** also, scale-value transformation uses functions in song.clj for
+    string conversion
 ** with figdef, the structure from song_command is broken
 *** it is not in the commands list
 *** it does not parse it's own stuff, but instead unknown does it
@@ -45,6 +51,8 @@
 *** play, stop
 *** save, load, close
 *** redo, undo
+** more modes for scales
+** in repl, do not print an error if command is empty
 * [#A] Architecture
 ** TODO [#B] In Repl: have a server in the background
 *** it takes commands of the repl, but standardized
@@ -71,4 +79,6 @@
 **** TODO Add better error handling, possible through preconditions!
 ** TODO in grammar, allow indentation and generally more whitespace
 ** TODO in grammar, allow numbers, uppercase, dashes in figure names
+** in grammar, allow mix case for mode
+** in states.clj:song, trim the prompt to a maximum length
    
