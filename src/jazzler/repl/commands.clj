@@ -19,8 +19,24 @@
 (defn exit [system args]
   (rt/shutdown system))
 
+(def help-s
+  {:general "You are in standard mode. You can use the following commands:
+
+new: Transition to song mode with an empty song.
+load <filepath>: Load a file and go into song mode.
+help: See this helptext."
+   
+   })
+
+(defn help
+  [ctx [cmd-str & [detail]]]
+  (if-let [helptext (help-s (keyword detail))]
+    (rt/result ctx helptext)
+    (rt/result ctx (:general help-s))))
+
 (def commands
-  {:open open
+  {:help help
+   :open open
    :close close
    :exit exit
    :quit exit})
