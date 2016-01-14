@@ -43,7 +43,8 @@
 
 (defn string->root
   "The given string is expected to be a valid root note."
-  [s] (keyword (str/upper-case s)))
+  [s] 
+  (keyword (apply str (str/upper-case (first s)) (rest s))))
 
 (def scales
   [:major :minor :ionian :aeolian])
