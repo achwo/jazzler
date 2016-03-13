@@ -1,7 +1,9 @@
 (ns jazzler.core
   (:gen-class)
-  (:require [jazzler.repl.system :as repl]
-            [jazzler.parser.system :as p]))
+  (:require 
+   [jazzler.repl.system :as repl]
+            [jazzler.parser.system :as p]
+            [jazzler.player :as pl]))
 
 (def demosong
   "Song: This is the Song Title
@@ -11,7 +13,7 @@
 ;; (player/play-song song)
 
 (defn -main [& args]
-  (comment if args
+  (if args
     ;; (print (slurp (first args)))
     (repl/start (p/parse-song (slurp (first args))))
     (repl/start)))

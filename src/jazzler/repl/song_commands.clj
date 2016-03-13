@@ -9,6 +9,11 @@
 (defn- transform-title [[title]] title)
 (defn- transform-tempo [[tempo]] (Integer. tempo))
 
+(def testsong {:bpm 120,
+ :key {:root :C, :mode :major},
+ :figures {"Fig" [{:elements [{:chord :i, :triad :major}]}]},
+ :structure ["Fig" "Fig"]})
+
 (defn figdef [ctx [_ figsym prog]]
   ;; INFO: Does not behave like the others, 
   ;;       because it does not have a keyword.

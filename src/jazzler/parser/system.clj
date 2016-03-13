@@ -18,6 +18,7 @@
    :structure t/structure
    :structureLine t/structure
    ;; :tempo-value t/tempo-value
+   :scale t/scale
    :scale-value t/scale-value
    :bar t/bar})
 

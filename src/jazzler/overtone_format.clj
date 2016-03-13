@@ -40,6 +40,9 @@
   {:pre [(string? s)]}
   (keyword (str (s/upper-case s) 3)))
 
+(defn- kw->root [kw]
+  (keyword (str (name kw) 3)))
+
 (defn- each-chord- [f s]
   (for [[figname bars] s]
     [figname (map #(assoc % :elements (map f (:elements %))) bars)]))
@@ -64,11 +67,15 @@
 (defn- convert-key [{[root triad] :key}]
   {:key {:root (string->root root) :mode triad}})
 
+(defn- new-convert-key [{root :root mode :mode}]
+  {:root (kw->root root) :mode mode})
+
 (defn add-notes
   "Adds :notes to every chord"
   ([{:keys [key figures] :as song}]
    {:pre [(every? map? [key figures])]}
-   (each-chord (partial add-notes key) song))
+   (let [realkey (new-convert-key key)]
+     (each-chord (partial add-notes realkey) song)))
   ([key chord]
    (assoc chord :notes (degree->midi-chord (:chord chord) key))))
 

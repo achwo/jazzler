@@ -4,6 +4,10 @@
   (:require [jazzler.parser.system :refer :all]
             [jazzler.overtone-format :refer :all]
             [overtone.inst.sampled-piano :refer :all]))
+
+;; (use 'overtone.core)
+;; (connect-external-server)
+
 (def piano sampled-piano)
 
 (defn play-note [metronome beat duration note]
@@ -30,6 +34,12 @@
   ;;   progression to time
   ;; etc..
   ;; song already needs to be in overtone format
-  (let [prog (song->seq song)]
+  (let [
+        with-notes (add-notes song)
+        with-rhythm (apply-rhythm quarters with-notes)
+        prog (song->seq with-rhythm)]
+    (println with-notes)
+    (println with-rhythm)
+    (println prog)
     (play-progression key bpm prog))
 )
