@@ -39,8 +39,6 @@
 *** TODO draw state diagram
 *** save and load file
 *** close file
-*** new song
-*** when song open: grammar rules
 *** undo and redo
 ** better errors in REPL
 ** abstract loop for playback / etc. in "song-time" in REPL
@@ -59,10 +57,10 @@
     example: incoming is a string progression
     before the server, it gets
 **** identified as a progression
-**** enhanced by information, that it is a progression
-**** then send to the server
+**** enhanced with information, that it is a progression
+**** then sent to the server
 **** the returning value is sent back to the client
-**** maybe stripped by the enhanced information at the start
+**** maybe stripped from the enhanced information at the start
 ** TODO make transformations SOLID
 *** one function per transformation
 *** composable via ->
@@ -72,13 +70,13 @@
 ** TODO [#B] check out clj-refactor
 ** TODO [#C] learn to use magit for emacs
 * Bugfixing
-** TODO in grammar, allow umlauts, ß, and maybe punctuation chars to title
-** TODO [#A] in repl, when entering a wrong command, it crashes with nullpointer
-** TODO [#A] add duration and beat fields to chords
+** TODO [#B] add duration and beat fields to chords
 *** Also, the error message that results is very bad!
-**** TODO Add better error handling, possible through preconditions!
+** TODO Add better error handling, possible through preconditions!
 ** TODO in grammar, allow indentation and generally more whitespace
 ** TODO in grammar, allow numbers, uppercase, dashes in figure names
 ** in grammar, allow mix case for mode
 ** in states.clj:song, trim the prompt to a maximum length
+** TODO [#A] when loading a file with more than one figure, only the last one is
+   in the song
    

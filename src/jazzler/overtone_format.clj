@@ -24,7 +24,7 @@
 (defn- degree->pitch [degree root triad]
   (first (pitch/degrees->pitches [degree] triad root)))
 
-(defn degree->midi-chord 
+(defn- degree->midi-chord 
   "Returns a list of midi notes for the given degree in the given key.
   Example: (:i {:root :C3 :mode :major}) => (48 55 52)"
   [degree {:keys [root mode]}]
@@ -33,7 +33,7 @@
        (mode CHORD)
        (repeat (degree->pitch degree root mode))))
 
-(defn string->root 
+(defn- string->root 
   "Converts a string root into a keyword in octave 3
   Example: \"c\" => :C3"
   [s]
@@ -44,24 +44,24 @@
   (for [[figname bars] s]
     [figname (map #(assoc % :elements (map f (:elements %))) bars)]))
 
-(defn each-chord
+(defn- each-chord
   "Apply function f to each chord in song."
   [f {:keys [figures] :as song}]
   (let [result (seqs->map (each-chord- f (seq figures)))]
     (assoc song :figures result)))
 
-(defn each-bar [f prog]
+(defn- each-bar [f prog]
   (map f prog))
 
-(defn each-figure [f {figs :figures :as song}]
+(defn- each-figure [f {figs :figures :as song}]
   (assoc song :figures (seqs->map (for [[figname prog] (seq figs)]
                                     [figname (f prog)]))))
 
-(defn add-key 
+(defn- add-key 
   "Add a field to a chord."
 [chord key])
 
-(defn convert-key [{[root triad] :key}]
+(defn- convert-key [{[root triad] :key}]
   {:key {:root (string->root root) :mode triad}})
 
 (defn add-notes

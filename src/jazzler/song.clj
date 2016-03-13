@@ -1,9 +1,34 @@
 (ns jazzler.song
-  (require [clojure.string :as str]))
+  (require [clojure.string :as str]
+           [clojure.set :as set]))
 
 ;; TODO: put song constructers and changers here
 
 (defn song [] {})
+
+(defn merge-songs 
+  "Merge the two songs with values of song1 being overridden."
+  [song1 song2]
+  (merge-with set/union song1 song2))
+
+(defn- missing-figs 
+  "Lists all figure names, that are used in structure, but do not exist."
+  [song]
+  (let [existing (set (keys (:figures song)))
+        used (set (:structure song))
+        missing (set/difference used existing)]
+    (seq missing)))
+
+(defn check
+  "Checks the song for semantic errors.
+  If there is an error, a list of error strings is returned.
+  Else the result is nil"
+  [song]
+  (let [miss-figs (missing-figs song)]
+    (if (empty? miss-figs)
+      []
+      [(str "The following figures where used, but do not exist: " miss-figs)])))
+
 
 (defn title 
   "When used without string argument, it returns the current title.

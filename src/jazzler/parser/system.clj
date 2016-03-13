@@ -4,7 +4,8 @@
             [jazzler.parser.transformer :as t]))
 
 (def transformations
-  {:bchord t/barchord
+  {
+   :bchord t/barchord
    :majorchord t/majorchord
    :minorchord t/minorchord
    :diminished t/diminished
@@ -13,10 +14,19 @@
    :figdef t/figdef
    :figsym t/figsym
    :title t/title
+   :tempo t/tempo
    :structure t/structure
+   :structureLine t/structure
    ;; :tempo-value t/tempo-value
    :scale-value t/scale-value
    :bar t/bar})
+
+(defn failure? 
+  "Tests whether a parse result is a failure."
+  [result]
+  (i/failure? result))
+
+(def valid? (complement failure?))
 
 (defn parse 
   "Parses the string s using startrule. Use m for custom transformations."
@@ -37,16 +47,22 @@
 (def parse-scale-val (partial parse :scale-value))
 ;; (def parse-scale-val #(p/song-parser % :start :scale-value))
 
+;; (def parse-all #(p/song-parser % :start :all))
+;; (def parse-all #(partial parse :all))
+
+(defn parse-all [s]
+  (let [parse (p/song-parser s :start :all)]
+    (if (failure? parse)
+      parse
+      (apply merge (t/transform transformations parse)))))
+  ;; (->> s
+       ;; (#(p/song-parser % :start :all))
+       ;; (t/transform transformations)
+       ;; (apply merge)))
+
 (defn parse-song [s]
   (->> s
        (p/song-parser)
        (t/transform transformations)
        (apply merge)))
 
-
-(defn failure? 
-  "Tests whether a parse result is a failure."
-  [result]
-  (i/failure? result))
-
-(def valid? (complement failure?))

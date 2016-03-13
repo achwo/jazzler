@@ -3,7 +3,8 @@
 
 (def song-grammar
   (str 
-   "<song> = title <nl> content <nl> structure "
+   "<song> = title <nl> content <nl> structure <wsfull*>"
+   "<all> = title | figdef | tempo | scale | structureLine "
 
    "title = <'Song:' | 'Title:'> <wsfull> title-value "
    "<title-value> = name "
@@ -25,7 +26,7 @@
    "<figdefs> = figdef (<nl> figdef)* "
 
    "<barOrChord> = bar | bchord "
-   "bar = <'['> chord (<wsfull> chord)* <']'> "
+   "bar = <'['> chord? (<wsfull> chord)* <']'> "
    "bchord = chord "
 
    "<chord> = majorchord | minorchord | diminished | augmented "
@@ -38,9 +39,12 @@
    "progression = <'['>barOrChord? (<wsfull> barOrChord)* <']'> "
    "structure = <'Structure'> <eol> structureContent "
    "<structureContent> = <ws> figsym (<wsfull> figsym)* "
+   
+   "structureLine = <'Structure:'> <ws> structureContentLine "
+   "<structureContentLine> = figsym (<ws> figsym)* "
 
-   "<name> = #'[A-Za-z0-9 ]+' "
-   "figsym = #'[A-Z][a-z]*' "
+   "<name> = #'[A-Za-z0-9 ,.<>;:äöüß_?!§$%&/()=*+#-]+' "
+   "figsym = #'[A-Z][a-z0-9]*' "
    "<number> = #'\\d+' "
 
    "eol = ws nl "

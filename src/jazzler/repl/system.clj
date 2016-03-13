@@ -24,5 +24,8 @@
    :song  state/song
    :exit  state/exit})
 
-(defn start []
-  (sm/run (system) states transitions))
+(defn start 
+  ([]
+   (sm/run (system) states transitions))
+  ([song]
+   (sm/run (assoc (system) :song song) states transitions)))

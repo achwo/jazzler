@@ -109,3 +109,22 @@
       (parse-structure "Structure\n\n Intro   Verse\n\tOutro")
       => {:structure ["Intro" "Verse" "Outro"]})))
 
+(facts "about parse-song"
+  (fact "it parses a minimal song"
+    (failure? (parse-song "Song: Title\nIntro = [i]\nStructure\nIntro"))
+    => false)
+  (fact "it parses a minimal song"
+    (parse-song 
+     "Song: title\nIntro = [i]\nOutro = [II]\nStructure\nIntro Outro")
+    => {:title "title"
+        :figures {"Outro" [{:elements [{:chord :ii, :triad :major}]}]
+                  "Intro" [{:elements [{:chord :i, :triad :minor}]}]}
+        :structure ["Intro" "Outro"]})
+  (fact "it parses with whitespace at the end"
+    (failure? 
+     (parse-song
+      "Song: title\nIntro = [i]\nOutro = [II]\nStructure\nIntro Outro")) 
+    => false) 
+  (future-fact "it parses a file" ;; needs a file in the repository
+    (failure?
+     (parse-song (slurp ""))) => false))

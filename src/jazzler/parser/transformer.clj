@@ -17,13 +17,10 @@
   {:pre [(string? s)]}
   (keyword (str/lower-case s)))
 
-(comment defn progression 
-  [& content]
-  (cond
-    (seq? content) {:figures {:progression content}}
-    (nil? content) {:figures {:progression '()}}))
-
 (defn title [title] {:title title})
+
+
+(defn tempo [tempo] {:bpm (Integer/parseInt tempo)})
 
 (defn bar [& content] {:elements content})
 
@@ -40,6 +37,8 @@
 (defn augmented [{root :chord}] {:chord root, :triad :augmented})
 
 (defn progression [& chords] chords)
+
+(defn scale [scale] {:key scale})
 
 (defn scale-value [[_ root] [_ mode]] 
   {:root (s/string->root root)
