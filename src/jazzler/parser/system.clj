@@ -19,6 +19,10 @@
    :structureLine t/structure
    ;; :tempo-value t/tempo-value
    :scale t/scale
+   :root t/root
+   :quality t/quality
+   :intervalnum t/intervalnum
+   :chord t/chord
    :scale-value t/scale-value
    :bar t/bar})
 

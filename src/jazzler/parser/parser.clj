@@ -12,15 +12,15 @@
    "tempo = <'Tempo:'> <ws> tempo-value "
    "<tempo-value> = number "
    
-   "scale = <'Scale:'> <ws> scale-value "
-   "scale-value = root <' '> mode "
+   "scale = <'Key:'> <ws> scale-value "
+   "scale-value = scaleroot <' '> mode "
 
-   "root = normalroot | sharproot | flatroot "
+   "scaleroot = normalroot | sharproot | flatroot "
    "<normalroot> = #'[A-G]' "
    "<sharproot> = 'C#' | 'D#' | 'F#' | 'G#' | 'A#' "
    "<flatroot> = 'Db' | 'Eb' | 'Gb' | 'Ab' | 'Bb' "
    
-   "mode = 'Major' | 'major' | 'Minor' | 'minor' "
+   "mode = 'Major' | 'major' | 'Minor' | 'minor' | 'Aeolian' | 'Ionian' | 'Dorian' | 'Phrygian' | 'Lydian' | 'Mixolydian' | 'Locrian' "
 
    "<content> = figdefs "
    "<figdefs> = figdef (<nl> figdef)* "
@@ -28,12 +28,16 @@
    "<barOrChord> = bar | bchord "
    "bar = <'['> chord? (<wsfull> chord)* <']'> "
    "bchord = chord "
-
-   "<chord> = majorchord | minorchord | diminished | augmented "
-   "majorchord = 'I' | 'II' | 'III' | 'IV' | 'V' |'VI' | 'VII' "
-   "minorchord = 'i' | 'ii' | 'iii' | 'iv' | 'v' | 'vi' | 'vii' "
-   "diminished = minorchord <'o'> "
-   "augmented = majorchord <'+'> "
+   
+   "chord = root quality? intervalnum? fifth? "
+   "root = 'I' | 'II' | 'III' | 'IV' | 'V' |'VI' | 'VII' "
+   "quality = '-' | '+' | 'o' "
+   "intervalnum = six | seven | nine | eleven "
+   "<six> = 'b'? '6' "
+   "<seven> = '7' | 'maj7' "
+   "<nine> = ('b' | '#')? '9' "
+   "<eleven> = '#'? '11' "
+   "fifth = '#5' | 'b5' | 'sus4' "
 
    "figdef = figsym <ws> <'='> <ws> progression "
    "progression = <'['>barOrChord? (<wsfull> barOrChord)* <']'> "

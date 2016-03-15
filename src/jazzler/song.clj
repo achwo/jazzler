@@ -4,7 +4,42 @@
 
 ;; TODO: put song constructers and changers here
 
-(defn song [] {})
+;;;;; DEFAULTS
+
+(def default-title "Unnamed song")
+(def default-composer "Unknown")
+(def default-tempo 120)
+(def default-chord {:root :i
+            :quality :major
+            :interval nil
+            :fifth :5})
+(def default-key {:root :C3 :mode :major})
+
+;;;; CONSTRUCTORS
+
+(defn chord 
+  "Usage: (chord :chord :i :beat 1) => chord"
+  [& {:as keys}]
+  (merge default-chord keys))
+
+(defn mode [& {:keys [root mode]}]
+  (merge default-key keys))
+
+(defn song 
+  "Returns a song with fields :bpm, key, :figures and :structure.
+  If k-v pairs are given as params, they are added to the song and 
+  might override the defaults.
+  Usage: 
+  (song) => default song (see example below)
+  (song :bpm 120 
+        :key ...)"
+  [& {:as keys}]
+  (let [default {:bpm default-tempo
+                 :key default-key
+                 :title default-title
+                 :author default-composer}]
+    (merge default keys)))
+
 
 (defn merge-songs 
   "Merge the two songs with values of song1 being overridden."
@@ -29,7 +64,6 @@
       []
       [(str "The following figures where used, but do not exist: " miss-figs)])))
 
-
 (defn title 
   "When used without string argument, it returns the current title.
   When provided, it sets the title to the given string."
@@ -50,10 +84,6 @@
   ([song k v]
    (assoc-in song [:figures k] v)))
 
-(defn chord
-  ([root triad]
-   {:chord root :triad triad}))
-
 (defn tempo
   ([song]
    (:bpm song))
@@ -72,7 +102,7 @@
   (keyword (apply str (str/upper-case (first s)) (rest s))))
 
 (def scales
-  [:major :minor :ionian :aeolian])
+  [:major :minor :ionian :aeolian :phrygian :lydian :dorian :mixolydian :locrian])
 
 (defn string->mode
   ([s]
