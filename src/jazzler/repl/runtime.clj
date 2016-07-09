@@ -6,7 +6,6 @@
   (string/trim s))
 
 (defn shutdown [system]
-  ;; TODO: is this the right place? changes transition
   (assoc system :transition :exit))
 
 (defn result 

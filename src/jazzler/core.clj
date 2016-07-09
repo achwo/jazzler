@@ -1,9 +1,8 @@
 (ns jazzler.core
   (:gen-class)
-  (:require 
-   [jazzler.repl.system :as repl]
+  (:require [jazzler.repl.system :as repl]
             [jazzler.parser.system :as p]
-            [jazzler.player :as pl]))
+            [jazzler.player.system :as pl]))
 
 (def demosong
   "Song: This is the Song Title

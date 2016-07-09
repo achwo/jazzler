@@ -1,7 +1,9 @@
 (ns jazzler.parser.chord-parser
   (:require [instaparse.core :as i]
+            [overtone.music.pitch :refer [CHORD degrees->pitches note]]
             [clojure.string :as s]))
 
+;;;; PARSER 
 (def chord-grammar
   (str 
    "chord = root quality? intervalnum? fifth? "
@@ -15,11 +17,8 @@
    "fifth = '#5' | 'b5' | 'sus4' "
 ))
 
-;; Difference between ws and wsfull:
-;; wsfull = [ \t\n\x0B\f\r]
-;; ws = [ \t]
-;; Most importantly: wsfull also contains newline characters
-;; for more info, see: http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
+
+;;;; transformers
 
 (defn root [number]
   {:root (keyword (s/lower-case number))})
@@ -78,3 +77,35 @@
     [(get-root-notes complete-chord)
      (get-quality-notes complete-chord)
      (get-interval-notes complete-chord)]))
+
+(defn new-chord 
+  []
+  {:root :i 
+   :quality :major
+   :interval :7
+   :fifth :5})
+
+(def qualities
+  {:minor [3 7]
+   :major [4 7]
+   :diminished [3 6]
+   :augmented [4 8]})
+
+(def intervals
+  {:b5 6
+   :5 7
+   :sharp5 8
+   :sus4 5
+   :flat6 8
+   :6 9
+   :7 10
+   :maj7 11
+   :b9 14
+   :9 15
+   :sharp9 16
+   :11 17
+   :sharp11 18})
+
+(defn root->note [root]
+  (note root))
+
