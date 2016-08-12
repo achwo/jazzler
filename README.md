@@ -1,6 +1,6 @@
 # jazzler
 
-A Clojure library designed to compose jazz music.
+A tool for creating and interacting with songs using a REPL and textual input.
 
 ## Usage
 
@@ -79,6 +79,8 @@ structure Chorus Chorus Outro
 
 ## Further Information
 For more information on Roman Numeral Analysis, see [Wikipedia: Roman Numeral Analysis](https://en.wikipedia.org/wiki/Roman_numeral_analysis).
+
+The project was created for my bachelor thesis, [Entwicklung einer DSL zur Komposition von Jazz-Musik](http://edoc.sub.uni-hamburg.de/haw/frontdoor.php?source_opus=3343&la=de).
 
 ## License
 
