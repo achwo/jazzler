@@ -11,3 +11,8 @@
     (song {:song :bla}) => :bla)
   (fact "it sets the song field"
     (song {} :bla) => {:song :bla}))
+
+(fact "about result"
+  (fact "if options are set, the result becomes a seq"
+    (result {} "result" :pprint)
+    => {:result "result" :print-options [:pprint]}))

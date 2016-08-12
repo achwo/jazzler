@@ -8,8 +8,8 @@
   (let [default {:chord :i :triad :major :beat 1 :duration 1}]
     (merge default keys)))
 
-(defn mode [& {:keys [root triad] :or {root :C3 triad :major}}]
-  {:root root :triad triad})
+(defn mode [& {:keys [root mode] :or {root :C3 mode :major}}]
+  {:root root :mode mode})
 
 (defn bar 
   "Returns a bar with 'n-chords' amount of chords and bar number 'number'

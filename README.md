@@ -16,7 +16,15 @@ help <command> => shows detail info on the command
 
 title <arg?> => shows or sets (if no arg given) the title value 
 
-progression <arg?>=> shows or sets (if no arg given) the progression value
+progression <arg?> => shows or sets (if no arg given) the progression value
+
+tempo <arg?> => shows or sets the tempo value (in bpm)
+
+scale <arg?> => shows or sets the scale (only Major or Minor at the moment)
+
+<Figurename> = <progression> => Defines a Figure, see 'help figure'
+
+structure <figures> => shows or sets the structure of the song
 
 exit, quit => quit the application
 
@@ -37,11 +45,36 @@ A bar consists of at least one chord symbol. To add a bar with only one chord, y
 
 `[I]` and `[[I]]` both describe a progression of one bar with the chord of the first scale degree.
 
+### Figures and Structure
+In Jazzler you can define figures. Figures are parts of a song, which may be repeated.
+The syntax for a figure is as follows:
+
+```
+<Figurename> = <Progression>
+```
+
+Figurename has to be a string, with the first letter in upper-case and the rest lower-case. For the progression, use the syntax described above.
+Example: `Intro = [I ii]`
+
+To set the structure, the syntax is as follows:
+
+```
+Structure: <Figurename> (<Figurename>)*
+```
+
+The figure names have to be defined before they are used in the structure.
+
+Example: `Structure: Intro Outro`
+
 ## Example
 
 ```
 Song: Demosong
-[I ii [iiio IV+ V] VI [vii I] I]
+Tempo: 80
+Key: Eb Major
+Chorus = [I ii [iiio IV+ V] VI [vii I] I]
+Outro = [I]
+structure Chorus Chorus Outro
 ```
 
 ## Further Information

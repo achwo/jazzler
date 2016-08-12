@@ -2,68 +2,68 @@
   (:require [jazzler.repl.io :as io]
             [jazzler.repl.runtime :as r]
             [jazzler.song :as s]
-            [jazzler.parsing :as p]
+            [jazzler.parser.system :as p]
+            [jazzler.player.system :as pl]
             [clojure.string :as str]))
 
-;; TODO: it would be really nice to have an exception if this fails on use
-(def title-parser #(p/song-parser % :start :title-value))
-
 (defn- transform-title [[title]] title)
+(defn- transform-tempo [[tempo]] (Integer. tempo))
 
-(defn unknown [ctx args]
-  (r/error ctx (str "Unknown command: " (first args) " " (rest args))))
+(defn language_command [ctx parse]
+  (let [new-song (s/merge-songs (r/song ctx) parse)
+        errors (s/check new-song)]
+    (if (empty? errors)
+      (do (if-not (nil? (s/structure parse))
+            (r/song ctx (s/structure (r/song ctx) (s/structure parse)))
+            (r/song ctx new-song)))
+      (r/error ctx 
+               (str errors)))))
+
+(defn unknown
+  [ctx args]
+  (let [input (str/join " " args)
+        parse (p/parse-all input)]
+    (if (p/valid? parse)
+      (language_command ctx parse)
+      (do 
+        ;; (println parse)
+        (r/error ctx
+                   (str "Unknown command: " args))))))
 
 (defn exit [ctx args]
   (r/shutdown ctx))
 
-(defn title 
-  [ctx [command-string & [title-string]]]
-  (if (nil? title-string)
-    (r/result ctx (s/title (r/song ctx)))
-    (let [title-parse (title-parser title-string)] 
-      (if (= (type title-parse) instaparse.gll.Failure)
-        (r/error ctx "The given title is invalid!")
-        (r/song ctx (s/title (r/song ctx) 
-                             (transform-title title-parse)))))))
+(defn play
+  [ctx _]
+  (if-not (nil? (s/structure (r/song ctx)))
+    (do (pl/play-song (r/song ctx))
+        ctx)
+    (r/error ctx "There is not song structure to be played!")))
 
-;; TODO: remove duplication between title and progression
-(defn progression
-  [ctx [cmd-str & [prog-str]]]
-  (if (nil? prog-str)
-    (r/result ctx (s/progression (r/song ctx)))
-    (let [prog-parse (p/parse-progression prog-str)]
-      (if (= (type prog-parse) instaparse.gll.Failure)
-        (r/error ctx "The given progression is invalid!")
-        (r/song ctx (s/progression (r/song ctx) prog-parse))))))
+(defn info
+  [ctx _]
+  (r/result ctx ctx :pprint))
+
+(defn song
+  [ctx _]
+  (r/result ctx (r/song ctx) :pprint))
 
 (def help-s
-  {:general "The following commands are available:
-help => shows this help screen
-help <command> => shows detail info on the command
-title <arg?> => shows or sets (if no arg given) the title value 
-progression <arg?>=> shows or sets (if no arg given) the progression value
-exit, quit => quit the application
+  {:general "You are in song mode. The following commands are available:
+
+help: Shows this help screen
+help <command|element>: Shows detail info on the command or element.
+
+info: Shows the current datastructure of the repl
+song: Shows the current datastructure of the song
+play: Plays the song back
+
+exit: Quit the application
 
 Use 'help <command>' for more info and syntactic information."
-   :title "If used without args, it returns the current title value.
-A valid title string can contain of upper- and lowercase letters,
-numbers and spaces."
    :exit "Quits the application."
-   :progression "A valid progression consists of:
-
-Chord: A chord is represented by roman numerals: 
-- I - VII for major chords
-- i - vii for minor chords
-- minor chord + o for diminished, i. e. iiio
-- major chord + + for augmented, i. e. V+
-
-Bar: A bar consists of outer square braces and a number of chords.
-i. e. [I II] is one bar of chord I and II, equally devided.
-A bar can also be represented by only a chord, if the whole bar
-consists of only this chord. I. e. V is one bar of V.
-
-Progression: A progression is a number of bars within square braces.
-I. e. [I [IV I] V I] would contain for bars."})
+   :info "Shows the current datastructure of the repl."
+   :song "Shows the current datastructure of the song."})
 
 (defn help
   [ctx [cmd-str & [detail]]]
@@ -71,13 +71,14 @@ I. e. [I [IV I] V I] would contain for bars."})
     (r/result ctx helptext)
     (r/result ctx (:general help-s))))
 
-;; TODO: remove duplication between this and jazzler.repl.commands
 (def commands
   {:help help
-   :title title
+   :info info
+   :song song
+   :play play
    :exit exit
    :quit exit
-   :progression progression})
+   })
 
 (defn command 
   "Returns a tuple with a fn and a seq of arguments."

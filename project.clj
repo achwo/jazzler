@@ -6,10 +6,13 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [instaparse "1.4.1"]
                  [quantisan/overtone "0.10-SNAPSHOT"]]
-  :main ^{:skip-aot true} jazzler.repl
+  :main ^{:skip-aot true} jazzler.core
+
   :target-path "target/%s"
-  :profiles {:dev {:source-paths ["dev"]
-                   :dependencies [[midje "1.8.2"]
-                                  [org.clojure/tools.namespace "0.2.11"]
-                                  [rhizome "0.2.5"]]
-                   :plugins [[lein-midje "3.2"]]}})
+  ;; :jvm-opts ^:replace []
+  ;; :profiles {:dev {:source-paths ["dev"]
+                   ;; :dependencies [[midje "1.8.2"]
+                                  ;; [org.clojure/tools.namespace "0.2.11"]
+                                  ;; [rhizome "0.2.5"]]
+                   ;; :plugins [[lein-midje "3.2"]]}}
+)
