@@ -16,7 +16,6 @@
   (or (trans (state transitions))
       (trans (:all transitions))))
 
-;; TODO: move assoc to the runtime scope
 (defn transition [{s :state t :transition :as system} transitions]
   (merge (state system (transition-target s t transitions))
          {:transition :else}))
